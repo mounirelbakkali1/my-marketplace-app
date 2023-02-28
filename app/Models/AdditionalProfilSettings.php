@@ -7,11 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class AdditionalProfilSettings extends Model
 {
-    use HasFactory ;
-    protected $fillable=[
-        'address',
-        'phone',
+    use HasFactory;
+
+    protected $fillable = [
         'intro',
         'featured_items',
     ];
+
+    public function FeaturedItems()
+    {
+        return $this->hasMany(FeaturedItem::class);
+    }
+    public function address()
+    {
+        return $this->hasOne(Adress::class);
+    }
+
 }

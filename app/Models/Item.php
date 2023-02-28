@@ -10,6 +10,15 @@ use Illuminate\Database\Eloquent\Model;
 class Item extends Model
 {
     use HasFactory;
+    const TYPE = 'item';
+
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $attributes['type'] = static::TYPE;
+    }
+
     public function Seller()
     {
         return $this->belongsTo(Seller::class);
