@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "121ea3a2fffe49b3ef9aa4d064b28c19",
+    "content-hash": "d435e5a3a555e87b3e42d5fbf1fb967f",
     "packages": [
         {
             "name": "brick/math",
@@ -2944,6 +2944,56 @@
             "time": "2023-01-12T18:13:24+00:00"
         },
         {
+            "name": "rexlabs/enum",
+            "version": "2.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rexlabsio/enum-php.git",
+                "reference": "3bd70d990e02e2180ef3fa6c0f11c910527183fe"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rexlabsio/enum-php/zipball/3bd70d990e02e2180ef3fa6c0f11c910527183fe",
+                "reference": "3bd70d990e02e2180ef3fa6c0f11c910527183fe",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.0|^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.5.7|^7.5|^8.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Rexlabs\\Enum\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jodie Dunlop",
+                    "email": "jodie.dunlop@rexlabs.com.au"
+                }
+            ],
+            "description": "Enumeration (enum) implementation for PHP",
+            "keywords": [
+                "constants",
+                "enum",
+                "enumeration",
+                "library",
+                "valuelist"
+            ],
+            "support": {
+                "issues": "https://github.com/rexlabsio/enum-php/issues",
+                "source": "https://github.com/rexlabsio/enum-php/tree/2.2.1"
+            },
+            "time": "2021-09-19T23:36:20+00:00"
+        },
+        {
             "name": "symfony/console",
             "version": "v6.2.5",
             "source": {
@@ -5406,6 +5456,76 @@
                 "source": "https://github.com/webmozarts/assert/tree/1.11.0"
             },
             "time": "2022-06-03T18:03:27+00:00"
+        },
+        {
+            "name": "willvincent/laravel-rateable",
+            "version": "3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/willvincent/laravel-rateable.git",
+                "reference": "f5445b9b41d1f1afb719bda52dbfdb2f0e39571e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/willvincent/laravel-rateable/zipball/f5445b9b41d1f1afb719bda52dbfdb2f0e39571e",
+                "reference": "f5445b9b41d1f1afb719bda52dbfdb2f0e39571e",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/database": "^8.53 || ^9.0|^10.0",
+                "illuminate/support": "^8.0 || ^9.0|^10.0",
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^6.23 || ^7.0|^8.0",
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "willvincent\\Rateable\\RateableServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "willvincent\\Rateable\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Will Vincent",
+                    "email": "tcindie@gmail.com",
+                    "homepage": "https://willvincent.com"
+                }
+            ],
+            "description": "Allows multiple models to be rated with a fivestar like system.",
+            "homepage": "https://github.com/willvincent/laravel-rateable",
+            "keywords": [
+                "Rating",
+                "fivestar",
+                "laravel",
+                "laravel 8",
+                "laravel 9",
+                "rateable",
+                "vote"
+            ],
+            "support": {
+                "issues": "https://github.com/willvincent/laravel-rateable/issues",
+                "source": "https://github.com/willvincent/laravel-rateable/tree/3.1.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/willvincent",
+                    "type": "github"
+                }
+            ],
+            "time": "2023-02-15T08:11:26+00:00"
         }
     ],
     "packages-dev": [

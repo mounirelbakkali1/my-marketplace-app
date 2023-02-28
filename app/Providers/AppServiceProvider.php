@@ -2,21 +2,18 @@
 
 namespace App\Providers;
 
+use App\Services\ItemService;
+use App\Services\ItemServiceImp;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
+    
     public function register(): void
     {
-        //
+        app()->bind(ItemService::class, ItemServiceImp::class);
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
         //
