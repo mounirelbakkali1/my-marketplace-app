@@ -4,36 +4,55 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreItemRequest;
 use App\Models\Item;
+use App\Services\ItemService;
 use Illuminate\Http\Request;
 
 class SellerController extends Controller
 {
+    private $itemService;
+
+    public function __construct(ItemService $itemService)
+    {
+        $this->itemService = $itemService;
+    }
+
     public function addItem(StoreItemRequest $request)
     {
-        $item = $request->validated();
-        $item['seller_id'] = auth()->user()->id;
-        Item::create($item);
+        $this->itemService->createItem($request);
         return redirect()->back();
     }
     public function editItem(StoreItemRequest $request, Item $item)
     {
-        $item->update($request->validated());
+        // TODO: include edit Item Page
         return redirect()->back();
     }
+
+    public function updateItem(StoreItemRequest $request, Item $item)
+    {
+        $this->itemService->updateItem($request, $item);
+        return redirect()->back();
+    }
+
     public function deleteItem(Item $item)
     {
-        $item->delete();
+        $this->itemService->deleteItem($item);
         return redirect()->back();
     }
     public function showItems()
     {
-        $items = Item::where('seller_id', auth()->user()->id)->get();
+        $items = $this->itemService->showItemsBySeller(auth()->user()->id);
        // return view('seller.items', compact('items'));
     }
     public function updateStock(Request $request, Item $item)
     {
-        $item->update($request->only('stock'));
+        $this->itemService->updateStock($request, $item);
         return redirect()->back();
+    }
+
+
+    public function consultDashboard()
+    {
+
     }
 
 

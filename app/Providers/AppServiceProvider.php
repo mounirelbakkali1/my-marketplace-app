@@ -8,7 +8,7 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    
+
     public function register(): void
     {
         app()->bind(ItemService::class, ItemServiceImp::class);

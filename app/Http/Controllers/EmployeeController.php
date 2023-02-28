@@ -12,14 +12,18 @@ class EmployeeController extends Controller
     }
     public function manageComplaint()
     {
-       // return view('employee.manageComplaint');
+       // TODO: include manageComplaint Page
     }
     public function controllSellersAccount()
     {
-       // return view('employee.controllSellersAccount');
+       // TODO: include controllSellersAccount Page
     }
     public function controllItems()
     {
-       // return view('employee.controllItems');
+       // TODO: include controllItems Page
+    }
+    public function escalateComplaint()
+    {
+
     }
 }
