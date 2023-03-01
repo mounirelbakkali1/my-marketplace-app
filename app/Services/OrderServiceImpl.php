@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Http\Requests\StoreAdressRequest;
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\StoreShippingInfoRequest;
-use App\Models\Adress;
+use App\Models\Address;
 use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
 
@@ -35,7 +35,7 @@ class OrderServiceImpl implements OrderService
         $orderItem = $this->orderItemRequest->validated();
         $shippingInfo = $this->shippingInfoRequest->validated();
         $order->orderItem->create(['order_id' => $order->id,$orderItem]);
-        $order->shippingInfo->create(['order_id' => $order->id,$shippingInfo,new Adress($address)]);
+        $order->shippingInfo->create(['order_id' => $order->id,$shippingInfo,new Address($address)]);
     }
 
     public function deleteOrder($id)

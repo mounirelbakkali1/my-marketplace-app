@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('stock');
             $table->string('size')->comment('size of the item with comma separated values in cm');
             $table->enum(ItemCondition::class, ItemCondition::getValues());
-            $table->text('description')->default('not specified');
+            $table->text('description');
             $table->timestamps();
 
             $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');

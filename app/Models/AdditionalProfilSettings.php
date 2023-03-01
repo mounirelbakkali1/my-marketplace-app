@@ -20,7 +20,39 @@ class AdditionalProfilSettings extends Model
     }
     public function address()
     {
-        return $this->hasOne(Adress::class);
+        return $this->hasOne(Address::class);
     }
 
 }
+// what is my username for github?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

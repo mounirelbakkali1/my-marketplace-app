@@ -40,6 +40,7 @@ class ItemServiceImp implements ItemService
 
     public function showItem($id)
     {
+        return "item ".$id." found";
         // TODO: Implement showItem() method.
     }
 

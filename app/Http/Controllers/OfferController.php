@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Address;
-use App\Http\Requests\StoreAdressRequest;
-use App\Http\Requests\UpdateAdressRequest;
+use App\Models\Offer;
+use App\Http\Requests\StoreOfferRequest;
+use App\Http\Requests\UpdateOfferRequest;
 
-class AdressController extends Controller
+class OfferController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -27,7 +27,7 @@ class AdressController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreAdressRequest $request)
+    public function store(StoreOfferRequest $request)
     {
         //
     }
@@ -35,7 +35,7 @@ class AdressController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Address $adress)
+    public function show(Offer $offer)
     {
         //
     }
@@ -43,7 +43,7 @@ class AdressController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Address $adress)
+    public function edit(Offer $offer)
     {
         //
     }
@@ -51,7 +51,7 @@ class AdressController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAdressRequest $request, Address $adress)
+    public function update(UpdateOfferRequest $request, Offer $offer)
     {
         //
     }
@@ -59,7 +59,7 @@ class AdressController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Address $adress)
+    public function destroy(Offer $offer)
     {
         //
     }

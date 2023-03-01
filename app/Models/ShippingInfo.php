@@ -14,8 +14,8 @@ class ShippingInfo extends Model
         return $this->belongsTo(Client::class);
     }
 
-    public function adress(){
-        return $this->hasOne(Adress::class);
+    public function address(){
+        return $this->hasOne(Address::class);
     }
 
 

@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('app_settings', function (Blueprint $table) {
             $table->id();
-            $table->json('social_media_links');
-            $table->json('contact_info');
-            $table->json('about_us');
+            $table->string('social_media_links');
+            $table->string('contact_info');
+            $table->string('about_us');
             $table->longText('terms_and_conditions');
             $table->longText('privacy_policy');
-            $table->json('faq');
+            $table->string('faq');
             $table->timestamps();
         });
     }
