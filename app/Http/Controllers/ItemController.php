@@ -19,13 +19,14 @@ class ItemController extends Controller
 
     public function index()
     {
-        //
+        $items = $this->itemService->getMostPopularItems();
+        return view('item.index', compact('items'));
     }
 
 
     public function create()
     {
-        //
+        return view('item.create');
     }
 
 
@@ -36,23 +37,29 @@ class ItemController extends Controller
 
     public function show(Item $item)
     {
-        //
+        $item = $this->itemService->showItem($item);
     }
 
 
     public function edit(Item $item)
     {
-        //
+        return view('item.edit', compact('item'));
     }
 
 
     public function update(UpdateItemRequest $request, Item $item)
     {
-        //
+        $this->itemService->updateItem($request, $item);
+        return redirect()->back();
     }
 
     public function destroy(Item $item)
     {
-        //
+        $this->itemService->deleteItem($item);
+        return redirect()->back();
     }
+
+
+
+
 }

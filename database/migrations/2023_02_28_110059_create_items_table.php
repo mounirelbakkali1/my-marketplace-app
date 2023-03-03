@@ -26,14 +26,15 @@ return new class extends Migration
             $table->foreign('seller_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('category_id')->references('id')->on('categories');
 
+            $table->softDeletes();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+
     public function down(): void
     {
-        Schema::dropIfExists('items');
+        Schema::table('items', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
     }
 };

@@ -14,9 +14,9 @@ class Order extends Model
     {
         return $this->belongsTo(Client::class);
     }
-    public function OrderItem()
+    public function OrderItems()
     {
-        return $this->hasOne(OrderItem::class);
+        return $this->HasMany(OrderItem::class);
     }
     public function ShippingInfo()
     {
