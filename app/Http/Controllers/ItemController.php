@@ -6,6 +6,7 @@ use App\Models\Item;
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
 use App\Services\ItemService;
+use function response;
 
 class ItemController extends Controller
 {
@@ -19,8 +20,18 @@ class ItemController extends Controller
 
     public function index()
     {
-        $items = $this->itemService->getMostPopularItems();
-        return view('item.index', compact('items'));
+        try{
+            $items = $this->itemService->getMostPopularItems();
+            return response()->json([
+                'message' => 'Items retrieved successfully',
+                'items' => $items
+            ], 200);
+        }catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error retrieving items',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
 
@@ -32,7 +43,11 @@ class ItemController extends Controller
 
     public function store(StoreItemRequest $request)
     {
-        $this->itemService->createItem($request);
+        $item = $this->itemService->createItem($request);
+        return response()->json([
+            'message' => 'Item created successfully',
+            'item' => $item
+        ], 201);
     }
 
     public function show(Item $item)

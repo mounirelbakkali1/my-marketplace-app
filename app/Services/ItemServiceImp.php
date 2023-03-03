@@ -14,8 +14,9 @@ class ItemServiceImp implements ItemService
     public function createItem(StoreItemRequest $request)
     {
         $item = $request->validated();
-        $item['seller_id'] = auth()->user()->id;
-        Item::create($item);
+        //$item['seller_id'] = auth()->user()->id;
+        $item = Item::create($item);
+        return $item;
     }
 
     public function updateItem(UpdateItemRequest $request, $id)
@@ -28,20 +29,19 @@ class ItemServiceImp implements ItemService
 
     public function getMostPopularItems()
     {
-        return "Hello from ItemServiceImp";
-        /*$items = DB::table('items')
-            ->join('ratings', 'items.id', '=', 'ratings.item_id')
-            ->select('items.*', DB::raw('AVG(ratings.rating) as rating_average'))
-            ->groupBy('items.id')
-            ->orderBy('rating_average', 'desc')
-            ->limit(15)
-            ->get();*/
+         return Item::join('ratings', 'items.id', '=', 'ratings.rateable_id')
+             ->selectRaw('items.*, AVG(ratings.rating) as rating_average')
+             ->groupBy('items.id')
+             ->orderByDesc('rating_average')
+             ->limit(15)
+             ->get();
     }
 
     public function showItem($id)
     {
-        return "item ".$id." found";
-        // TODO: Implement showItem() method.
+        return  Item::with('ratings')
+             ->withCount('ratings')
+             ->where('id', $id);
     }
 
     public function showItemsByCategory($category)

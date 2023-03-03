@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
-use App\Enums\ItemCondition;
 use App\Enums\ItemStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use willvincent\Rateable\Rateable;
 
 class Item extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes , Rateable;
     const TYPE = 'item';
 
 

@@ -13,7 +13,7 @@ class StoreItemRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -25,14 +25,12 @@ class StoreItemRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'description' => 'required|string|max:5000',
             'price' => 'required|numeric|min:0',
+            'primary_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'category_id' => 'required',
             'status' => 'required|in:' . implode(',', ItemStatus::getValues()),
-            'images' => 'required|array',
-            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'stock' => 'required|numeric|min:0',
-            'category_id' => 'required|exists:categories,id',
-            'condition' => 'required|in:' . implode(',', ItemCondition::getValues()),
+            'collection_id' => 'required',
+            'seller_id' => 'required',
         ];
     }
 }
