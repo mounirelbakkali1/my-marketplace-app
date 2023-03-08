@@ -16,7 +16,8 @@
     </head>
     <body class="antialiased">
         <div id="app">
-            hello
         </div>
     </body>
 </html>
+
+
