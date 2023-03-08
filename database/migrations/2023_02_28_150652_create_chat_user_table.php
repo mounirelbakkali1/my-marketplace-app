@@ -13,12 +13,11 @@ return new class extends Migration
     {
         Schema::create('chat_user', function (Blueprint $table) {
             $table->id();
-            $table->integer('chat_id');
-            $table->integer('user_id');
+            $table->foreignId('chat_id')->constrained('chats')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
 
-            $table->foreign('chat_id')->references('id')->on('chats');
-            $table->foreign('user_id')->references('id')->on('users');
+
         });
     }
 

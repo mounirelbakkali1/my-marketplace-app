@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('complaints_resolved', function (Blueprint $table) {
             $table->id();
-            $table->integer('complaint_id');
-            $table->integer('employee_id')->comment('employee who resolved the complaint');
+            $table->foreignId('complaint_id')->constrained('complaints')->onDelete('cascade');
+            $table->foreignId('employee_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
-            $table->foreign('complaint_id')->references('id')->on('complaints');
-            $table->foreign('employee_id')->references('id')->on('users');
+
         });
     }
 

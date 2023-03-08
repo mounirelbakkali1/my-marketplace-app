@@ -13,16 +13,12 @@ return new class extends Migration
     {
         Schema::create('offers', function (Blueprint $table) {
             $table->id();
-            $table->integer('item_id');
+            $table->foreignId('item_id')->constrained('items')->onDelete('cascade');
             $table->float('discount');
             $table->date('start_date');
             $table->date('end_date');
             $table->timestamps();
 
-            $table->foreign('item_id')
-                ->references('id')
-                ->on('items')
-                ->onDelete('cascade');
 
         });
     }

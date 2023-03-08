@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateItemDetailsRequest;
 use App\Models\Item;
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
@@ -52,7 +53,10 @@ class ItemController extends Controller
 
     public function show(Item $item)
     {
-        $item = $this->itemService->showItem($item);
+        return response()->json([
+            'message' => 'Item retrieved successfully',
+            'item' => $item
+        ], 200);
     }
 
 
@@ -74,7 +78,24 @@ class ItemController extends Controller
         return redirect()->back();
     }
 
+    public function getDetails(Item $item)
+    {
+        $item = Item::with('itemDetails')->findOrFail($item->id);
+        return response()->json([
+            'message' => 'Item details retrieved successfully',
+            'item' => $item
+        ], 200);
+    }
+    public function updateDetails(UpdateItemDetailsRequest $request, Item $item)
+    {
+        return 10 ;
+        $item->itemDetails->update($request->validated());
 
+        return response()->json([
+            'message' => 'Item details updated successfully',
+            'item' => $item
+        ], 200);
+    }
 
 
 }

@@ -39,9 +39,11 @@ class ItemServiceImp implements ItemService
 
     public function showItem($id)
     {
-        return  Item::with('ratings')
-             ->withCount('ratings')
-             ->where('id', $id);
+        return  Item::where('id', $id);
+    }
+    public function showItemDetails($id)
+    {
+        return   Item::with('itemDetails')->findOrFail($id);
     }
 
     public function showItemsByCategory($category)

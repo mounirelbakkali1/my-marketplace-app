@@ -22,11 +22,9 @@ class ItemDetailsFactory extends Factory
         return [
             'item_id' => Item::factory(),
             'color' => $this->faker->colorName,
-            'size' => $this->faker->randomFloat(2, 0, 1000),
+            'size' => $this->faker->randomDigitNotZero().','.$this->faker->randomDigitNotZero(),
             'stock' => $this->faker->randomDigitNotZero(),
-            'description' => $this->faker->text,
-            'condition' => $this->faker->randomKey(ItemCondition::getValues()),
-
+            'description' => $this->faker->text
         ];
     }
 }

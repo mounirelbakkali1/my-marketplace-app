@@ -11,14 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('shipping_infos', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('phone');
-            $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
-            $table->timestamps();
-
-
+        Schema::table('additional_profil_settings', function (Blueprint $table) {
+               $table->foreignId('address_id')->constrained('addresses')->onDelete('cascade');
 
         });
     }
@@ -28,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('shipping_infos');
+        Schema::table('additional_profil_settings', function (Blueprint $table) {
+            //
+        });
     }
 };

@@ -14,14 +14,14 @@ return new class extends Migration
     {
         Schema::create('item_details', function (Blueprint $table) {
             $table->id();
-            $table->integer('item_id')->unsigned();
+            $table->foreignId('item_id')->constrained('items')->onDelete('cascade');
             $table->integer('stock');
+            $table->string('color');
             $table->string('size')->comment('size of the item with comma separated values in cm');
-            $table->enum(ItemCondition::class, ItemCondition::getValues());
+            $table->enum(ItemCondition::class, ItemCondition::getValues())->default(ItemCondition::NEW);
             $table->text('description');
             $table->timestamps();
 
-            $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
         });
     }
 

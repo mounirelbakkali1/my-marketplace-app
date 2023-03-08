@@ -28,7 +28,6 @@ class ItemFactory extends Factory
             'category_id' => Category::factory(),
             'collection_id' => Collection::factory(),
             'seller_id' => Seller::factory(),
-            'itemDetails'=> ItemDetails::factory(),
         ];
     }
 }

@@ -15,17 +15,11 @@ return new class extends Migration
             $table->id();
             $table->float('item_price');
             $table->integer('quantity');
-            $table->integer('order_id')->unsigned();
-            $table->integer('item_id')->unsigned();
+            $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
+            $table->foreignId('item_id')->constrained('items')->onDelete('cascade');
             $table->timestamps();
 
 
-            $table->foreign('order_id')->references('id')
-                ->on('orders')
-                ->onDelete('cascade');
-            $table->foreign('item_id')->references('id')
-                ->on('items')
-                ->onDelete('cascade');
         });
     }
 

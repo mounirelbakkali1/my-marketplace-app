@@ -17,17 +17,13 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->float('price');
-            $table->integer('seller_id')->unsigned();
-            $table->integer('category_id')->unsigned();
-            $table->integer('collection_id')->unsigned();
+            $table->foreignId('seller_id')->constrained('users')->onDelete('cascade');
+
             $table->string('primary_image')->nullable();
             $table->enum(ItemStatus::class, ItemStatus::getValues())->default(ItemStatus::AVAILABLE);
             $table->timestamps();
 
 
-            $table->foreign('seller_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('category_id')->references('id')->on('categories');
-            $table->foreign('collection_id')->references('id')->on('collections');
             $table->softDeletes();
         });
     }

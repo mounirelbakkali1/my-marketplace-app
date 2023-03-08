@@ -13,15 +13,11 @@ return new class extends Migration
     {
         Schema::create('additional_profil_settings', function (Blueprint $table) {
             $table->id();
-            $table->integer('address_id');
             $table->string('phone');
             $table->string('intro');
             $table->timestamps();
 
-            $table->foreign('address_id')
-                ->references('id')
-                ->on('addresses')
-                ->onDelete('cascade');
+
         });
     }
 

@@ -27,7 +27,7 @@ class ItemDetails extends Model
 
     public function getSizeAttribute($value)
     {
-        return explode(',')[0] . ' x ' . explode(',')[1] . ' cm';
+        return explode(',',$value)[0] . ' x ' . explode(',',$value)[1] . ' cm';
     }
 
     protected $casts = [
