@@ -11,20 +11,26 @@ use function auth;
 class ItemServiceImp implements ItemService
 {
 
-    public function createItem(StoreItemRequest $request)
+    public function createItem($request)
     {
-        $item = $request->validated();
+        return 0 ;
         //$item['seller_id'] = auth()->user()->id;
+        $item = $request->validated();
         $item = Item::create($item);
         return $item;
     }
 
     public function updateItem(UpdateItemRequest $request, $id)
     {
+        $item = $request->validated();
+        $item = Item::where('id', $id)->update($item);
+        return $item;
     }
 
     public function deleteItem($id)
     {
+        $item = Item::where('id', $id)->delete();
+        return $item;
     }
 
     public function getMostPopularItems()

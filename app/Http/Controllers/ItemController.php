@@ -7,6 +7,8 @@ use App\Models\Item;
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
 use App\Services\ItemService;
+use Exception;
+use Illuminate\Http\Request;
 use function response;
 
 class ItemController extends Controller
@@ -68,33 +70,53 @@ class ItemController extends Controller
 
     public function update(UpdateItemRequest $request, Item $item)
     {
-        $this->itemService->updateItem($request, $item);
-        return redirect()->back();
+        $item = $this->itemService->updateItem($request, $item);
+        return response()->json([
+            'message' => 'Item updated successfully',
+            'item' => $item
+        ], 200);
     }
 
     public function destroy(Item $item)
     {
-        $this->itemService->deleteItem($item);
-        return redirect()->back();
+        $item = $this->itemService->deleteItem($item);
+        return response()->json([
+            'message' => 'Item deleted successfully',
+            'item_id' => $item->id
+        ], 200);
     }
 
     public function getDetails(Item $item)
     {
-        $item = Item::with('itemDetails')->findOrFail($item->id);
-        return response()->json([
-            'message' => 'Item details retrieved successfully',
-            'item' => $item
-        ], 200);
+      try{
+          $item = Item::with('itemDetails')->findOrFail($item->id);
+          return response()->json([
+              'message' => 'Item details retrieved successfully',
+              'item' => $item
+          ], 200);
+      }catch (Exception $e){
+            return response()->json([
+                'message' => 'Error retrieving item details',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
+
     public function updateDetails(UpdateItemDetailsRequest $request, Item $item)
     {
-        return 10 ;
-        $item->itemDetails->update($request->validated());
+        try{
+            $item->itemDetails->update($request->validated());
 
-        return response()->json([
-            'message' => 'Item details updated successfully',
-            'item' => $item
-        ], 200);
+            return response()->json([
+                'message' => 'Item details updated successfully',
+                'item' => $item
+            ], 200);
+        }catch (Exception $e){
+            return response()->json([
+                'message' => 'Error updating item details',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
 
