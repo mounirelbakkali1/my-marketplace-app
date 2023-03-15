@@ -24,7 +24,12 @@ class ItemController extends Controller
     public function index()
     {
         try{
-            $items = $this->itemService->getMostPopularItems();
+            //$items = $this->itemService->getMostPopularItems();
+            $items = Item::all();
+            if ($items->isEmpty())
+                return response()->json([
+                    'message' => 'No items found',
+                ], 404);
             return response()->json([
                 'message' => 'Items retrieved successfully',
                 'items' => $items
@@ -37,11 +42,6 @@ class ItemController extends Controller
         }
     }
 
-
-    public function create()
-    {
-        return view('item.create');
-    }
 
 
     public function store(StoreItemRequest $request)
@@ -86,10 +86,15 @@ class ItemController extends Controller
         ], 200);
     }
 
-    public function getDetails(Item $item)
+    public function getDetails($item)
     {
+        $item = Item::find($item);
+        if (!$item)
+            return response()->json([
+                'message' => 'Item not found',
+            ], 404);
       try{
-          $item = Item::with('itemDetails')->findOrFail($item->id);
+          $item = Item::with('itemDetails.images')->findOrFail($item->id);
           return response()->json([
               'message' => 'Item details retrieved successfully',
               'item' => $item

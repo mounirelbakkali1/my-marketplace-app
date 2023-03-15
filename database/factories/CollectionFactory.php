@@ -18,7 +18,7 @@ class CollectionFactory extends Factory
     {
         return [
             'name' => $this->faker->name,
-            'image' => $this->faker->image('public/storage/collection/images', 640, 480, null, false),
+            'image' => $this->faker->imageUrl(),
             'description' => $this->faker->text,
         ];
     }

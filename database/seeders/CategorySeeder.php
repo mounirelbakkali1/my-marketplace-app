@@ -22,11 +22,12 @@ class CategorySeeder extends Seeder
             'other'
         ];
         foreach ($categories as $category) {
-            \App\Models\Category::create([
-                'name' => $category,
-                'image' => 'https://picsum.photos/200/300'
-            ]);
-        }
+                    \App\Models\Category::factory()->create([
+                        'name' => $category,
+                        'image' => 'https://picsum.photos/200/300',
+                    ]);
+                }
+
 
     }
 }
