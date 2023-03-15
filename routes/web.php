@@ -14,11 +14,12 @@ Route::get('/', function () {
 });
 
 Route::get('/playground',function () {
-    // firing PlaygroundEvent
+    /*// firing PlaygroundEvent
     event(new PlaygroundEvent());
-   /* $url = URL::temporarySignedRoute(
+   $url = URL::temporarySignedRoute(
         'share-video', now()->addSeconds(30), ['video' => 123]
     );*/
+    PlaygroundEvent::dispatch();
 
     return 'sent';
 });

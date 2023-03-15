@@ -53,19 +53,19 @@ class ItemController extends Controller
         ], 201);
     }
 
-    public function show(Item $item)
+    public function show($item)
     {
+        $item = $this->itemService->getItem($item);
+        if (!$item)
+            return response()->json([
+                'message' => 'Item not found',
+            ], 404);
         return response()->json([
             'message' => 'Item retrieved successfully',
             'item' => $item
         ], 200);
     }
 
-
-    public function edit(Item $item)
-    {
-        return view('item.edit', compact('item'));
-    }
 
 
     public function update(UpdateItemRequest $request, Item $item)

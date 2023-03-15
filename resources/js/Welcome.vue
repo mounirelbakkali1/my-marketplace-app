@@ -1,4 +1,5 @@
 <script>
+console.log("welcome page");
     export default {
 
     }

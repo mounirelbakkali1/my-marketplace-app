@@ -3,35 +3,26 @@
  * to our Laravel back-end. This library automatically handles sending the
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
+import Echo from 'laravel-echo';
 
-import axios from 'axios';
-window.axios = axios;
+import Pusher from 'pusher-js';
 
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+window.Pusher = Pusher;
+Pusher.logToConsole = true;
 
-/**
- * Echo exposes an expressive API for subscribing to channels and listening
- * for events that are broadcast by Laravel. Echo and event broadcasting
- * allows your team to easily build robust real-time web applications.
- */
+/*
+window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: import.meta.env.VITE_PUSHER_APP_KEY,
+    cluster: import.meta.env.PUSHER_APP_CLUSTER
+});
+*/
+console.log('key: ',import.meta.env.VITE_PUSHER_APP_KEY)
+let pusher = new Pusher(import.meta.env.VITE_PUSHER_APP_KEY, {
+    cluster: 'eu'
+});
 
- import Echo from 'laravel-echo';
-
- import Pusher from 'pusher-js';
- window.Pusher = Pusher;
-
- window.Echo = new Echo({
-     broadcaster: 'pusher',
-     key: import.meta.env.VITE_PUSHER_APP_KEY,
-     /* cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER ?? 'eu',
-      wsHost: import.meta.env.VITE_PUSHER_HOST ? import.meta.env.VITE_PUSHER_HOST : `ws-${import.meta.env.VITE_PUSHER_APP_CLUSTER}.pusher.com`,
-      wsPort: import.meta.env.VITE_PUSHER_PORT ?? 80,
-      wssPort: import.meta.env.VITE_PUSHER_PORT ?? 443,
-      forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? 'https') === 'https',
-      enabledTransports: ['ws', 'wss'],*/
-     forceTLS: false,
-     wsHost: window.location.hostname,
-        wsPort: 6001,
-     enabledTransports: ['ws', 'wss'],
-     encrypted: false,
- });
+let channel = pusher.subscribe('public.playground.1');
+channel.bind('playground', function(data) {
+    console.log(JSON.stringify(data));
+});

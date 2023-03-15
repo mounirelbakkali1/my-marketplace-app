@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\AdditionalProfilSettings;
+use App\Models\Address;
 use App\Models\Seller;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -9,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Seller>
  */
-class SellerFactory extends Factory
+class SellerFactory extends UserFactory
 {
     /**
      * Define the model's default state.
@@ -18,10 +20,25 @@ class SellerFactory extends Factory
      */
     public function definition(): array
     {
-        return [
-            'name' => $this->faker->name,
-            'email' => $this->faker->unique()->safeEmail,
-            'password' => Hash::make($this->faker->password()),
-        ];
+        return array_merge(parent::definition(), [
+            'role' => Seller::TYPE,
+        ]);
+    }
+    // forUser() is a method from UserFactory
+    public function forUser(): static
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'role' => Seller::TYPE,
+            ];
+        });
+    }
+    public function configure()
+    {
+        return $this->afterCreating(function (Seller $seller) {
+            $seller->AdditionalInfo()->save(
+                AdditionalProfilSettings::factory()->make()
+            );
+        });
     }
 }

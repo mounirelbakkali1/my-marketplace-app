@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreItemRequest;
 use App\Models\Item;
+use App\Models\Seller;
 use App\Services\ItemService;
 use Illuminate\Http\Request;
 
@@ -16,44 +17,45 @@ class SellerController extends Controller
         $this->itemService = $itemService;
     }
 
-    public function addItem(StoreItemRequest $request)
-    {
-        $this->itemService->createItem($request);
-        return redirect()->back();
+    public function getSeller($sellerID){
+        $seller = Seller::find($sellerID);
+        if (!$seller) {
+            return response()->json([
+                'message' => 'Seller not found with id ' . $sellerID,
+            ], 404);
+        }
+        return response()->json([
+            'seller' =>$seller,
+        ]);
     }
-    public function editItem(StoreItemRequest $request, Item $item)
-    {
-        // TODO: include edit Item Page
-        return redirect()->back();
-    }
-
-    public function updateItem(StoreItemRequest $request, Item $item)
-    {
-        $this->itemService->updateItem($request, $item);
-        return redirect()->back();
-    }
-
-    public function deleteItem(Item $item)
-    {
-        $this->itemService->deleteItem($item);
-        return redirect()->back();
-    }
-    public function showItems()
-    {
-        $items = $this->itemService->showItemsBySeller(auth()->user()->id);
-       // return view('seller.items', compact('items'));
-    }
-    public function updateStock(Request $request, Item $item)
-    {
-        $this->itemService->updateStock($request, $item);
-        return redirect()->back();
+    public function getSellers(){
+        $sellers = Seller::all();
+        if($sellers->isEmpty())
+        {
+            return response()->json([
+                'message' => 'No sellers found',
+            ], 404);
+        }
+        return response()->json([
+            'sellers' =>$sellers,
+        ]);
     }
 
 
-    public function consultDashboard()
-    {
-
+    public function getSellerInfo($sellerId){
+        // get seller with additional info (and also additional info with address)
+        $seller = Seller::with('AdditionalInfo.address')->find($sellerId);
+        if (!$seller) {
+            return response()->json([
+                'message' => 'Seller not found with id ' . $sellerId,
+            ], 404);
+        }
+        return response()->json([
+            'seller' =>$seller,
+        ]);
     }
+
+
 
 
 }

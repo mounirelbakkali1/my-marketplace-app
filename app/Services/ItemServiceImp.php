@@ -45,7 +45,7 @@ class ItemServiceImp implements ItemService
 
     public function showItem($id)
     {
-        return  Item::where('id', $id);
+        return  Item::findOrFail($id);
     }
     public function showItemDetails($id)
     {

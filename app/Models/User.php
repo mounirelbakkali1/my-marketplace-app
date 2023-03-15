@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\Role;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -13,7 +14,7 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
-    const TYPE = 'user';
+    const TYPE = Role::CLIENT;
 
     protected $fillable = [
         'name',
@@ -35,6 +36,15 @@ class User extends Authenticatable
         parent::__construct($attributes);
         $attributes['type'] = static::TYPE;
     }
+
+    // set type column to seller
+    protected static function booted()
+    {
+        static::creating(function ($model) {
+            $model->role = self::TYPE;
+        });
+    }
+
 
     public function chats()
     {
