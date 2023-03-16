@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\SellerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,8 +24,26 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::group(['prefix' => 'v1'], function () {
-    Route::apiResource('items', ItemController::class);
+     // Items
+    Route::post('items', [ItemController::class, 'store']);
+    Route::get('items', [ItemController::class, 'index']);
+    Route::put('items/{item}', [ItemController::class, 'update']);
+    Route::get('items/{item}', [ItemController::class, 'show']);
+    Route::delete('items/{item}', [ItemController::class, 'destroy']);
     Route::get('items/{item}/details', [ItemController::class, 'getDetails']);
     Route::post('items/{item}/details', [ItemController::class, 'storeDetails']);
     Route::put('items/{item}/details', [ItemController::class, 'updateDetails']);
+
+    // Categories
+    Route::apiResource('categories', CategoryController::class);
+
+    // Collections
+        Route::apiResource('collections', CollectionController::class)->except(['create']);
+
+    // Sellers
+    Route::get('sellers', [SellerController::class, 'getSellers']);
+    Route::get('sellers/{seller}', [SellerController::class, 'getSeller']);
+    Route::get('sellers/{seller}/info', [SellerController::class, 'getSellerInfo']);
+
+
 });

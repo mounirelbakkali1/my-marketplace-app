@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
+use App\Enums\Role;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
 class Client extends User
 {
     use HasFactory;
-    const TYPE = 'client';
+    const TYPE = Role::CLIENT;
     protected $table = 'users';
 
     public function complaints()
@@ -19,5 +19,12 @@ class Client extends User
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+    // set type column to seller
+    protected static function booted()
+    {
+        static::creating(function ($model) {
+            $model->role = self::TYPE;
+        });
     }
 }

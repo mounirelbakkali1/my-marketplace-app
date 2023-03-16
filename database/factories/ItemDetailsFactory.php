@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Enums\ItemCondition;
-use App\Models\Item;
+use App\Models\Image;
+use App\Models\ItemDetails;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,11 +20,20 @@ class ItemDetailsFactory extends Factory
     {
 
         return [
-            'item_id' => Item::factory(),
             'color' => $this->faker->colorName,
             'size' => $this->faker->randomDigitNotZero().','.$this->faker->randomDigitNotZero(),
             'stock' => $this->faker->randomDigitNotZero(),
             'description' => $this->faker->text
         ];
+    }
+
+    public function configure()
+    {
+
+        return $this->afterCreating(function (ItemDetails $itemDetails) {
+            $itemDetails->images()->save(
+                Image::factory()->make()
+            );
+        });
     }
 }

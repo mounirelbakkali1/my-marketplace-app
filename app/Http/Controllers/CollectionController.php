@@ -5,24 +5,25 @@ namespace App\Http\Controllers;
 use App\Models\Collection;
 use App\Http\Requests\StoreCollectionRequest;
 use App\Http\Requests\UpdateCollectionRequest;
+use App\Services\HandleDataLoading;
 
 class CollectionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    private HandleDataLoading $handleDataLoading;
+
+    public function __construct(HandleDataLoading $handleDataLoading)
     {
-        //
+        $this->handleDataLoading = $handleDataLoading;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+
+    public function index()
     {
-        //
+        return $this->handleDataLoading->handleCollection(function () {
+            return Collection::all();
+        }, 'collections');
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -32,13 +33,6 @@ class CollectionController extends Controller
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Collection $collection)
-    {
-        //
-    }
 
     /**
      * Show the form for editing the specified resource.
@@ -59,8 +53,9 @@ class CollectionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Collection $collection)
+    public function destroy($collection)
     {
-        //
+        $collection = Collection::find($collection);
+        return $this->handleDataLoading->handleDestroy($collection, 'collection','delet');
     }
 }

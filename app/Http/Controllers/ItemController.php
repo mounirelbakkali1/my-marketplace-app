@@ -2,99 +2,82 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateItemDetailsRequest;
-use App\Models\Item;
 use App\Http\Requests\StoreItemRequest;
+use App\Http\Requests\UpdateItemDetailsRequest;
 use App\Http\Requests\UpdateItemRequest;
+use App\Models\Item;
+use App\Services\HandleDataLoading;
 use App\Services\ItemService;
-use function response;
 
 class ItemController extends Controller
 {
     private $itemService;
+    private $handleDataLoading;
 
-    public function __construct(ItemService $itemService)
+    public function __construct(ItemService $itemService, HandleDataLoading $handleDataLoading)
     {
         $this->itemService = $itemService;
+        $this->handleDataLoading = $handleDataLoading;
+
     }
 
 
     public function index()
     {
-        try{
-            $items = $this->itemService->getMostPopularItems();
-            return response()->json([
-                'message' => 'Items retrieved successfully',
-                'items' => $items
-            ], 200);
-        }catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Error retrieving items',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        return $this->handleDataLoading->handleCollection(function () {
+            return $this->itemService->getMostPopularItems();
+        }, 'items');
     }
 
-
-    public function create()
-    {
-        return view('item.create');
-    }
 
 
     public function store(StoreItemRequest $request)
     {
-        $item = $this->itemService->createItem($request);
-        return response()->json([
-            'message' => 'Item created successfully',
-            'item' => $item
-        ], 201);
+        return  $this->handleDataLoading->handleAction(function() use ($request){
+            $item = $this->itemService->createItem($request);
+            return $item;
+        });
     }
 
-    public function show(Item $item)
+    public function show($item)
     {
-        return response()->json([
-            'message' => 'Item retrieved successfully',
-            'item' => $item
-        ], 200);
+
+       return $this->handleDataLoading->handleAction(function () use ($item){
+            $item = $this->itemService->showItem($item);
+            $item->increment('views');
+            return $item;
+        }, 'item','retreiv');
     }
 
-
-    public function edit(Item $item)
-    {
-        return view('item.edit', compact('item'));
-    }
 
 
     public function update(UpdateItemRequest $request, Item $item)
     {
-        $this->itemService->updateItem($request, $item);
-        return redirect()->back();
+        return $this->handleDataLoading->handleAction(function () use ($request,$item){
+            $this->itemService->updateItem($request, $item);
+        }, 'item', $item,'updat');
     }
 
     public function destroy(Item $item)
     {
-        $this->itemService->deleteItem($item);
-        return redirect()->back();
+       return $this->handleDataLoading->handleDestroy($item,'item', 'delet');
+
     }
 
-    public function getDetails(Item $item)
+    public function getDetails($item)
     {
-        $item = Item::with('itemDetails')->findOrFail($item->id);
-        return response()->json([
-            'message' => 'Item details retrieved successfully',
-            'item' => $item
-        ], 200);
+        $item = Item::find($item);
+        return $this->handleDataLoading->handleDetails(function () use ($item){
+            return Item::with('itemDetails.images')->find($item->id);
+        }, 'item', $item,'retreiv');
     }
+
     public function updateDetails(UpdateItemDetailsRequest $request, Item $item)
     {
-        return 10 ;
-        $item->itemDetails->update($request->validated());
-
-        return response()->json([
-            'message' => 'Item details updated successfully',
-            'item' => $item
-        ], 200);
+        $item = Item::find($item->id);
+        return $this->handleDataLoading->handleDetails(function () use ($request, $item){
+            $item->itemDetails->update($request->validated());
+        }, 'item', $item,'updat');
     }
 
 

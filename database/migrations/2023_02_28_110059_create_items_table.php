@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->float('price');
+            $table->integer('views')->default(0);
             $table->foreignId('seller_id')->constrained('users')->onDelete('cascade');
-
             $table->string('primary_image')->nullable();
             $table->enum(ItemStatus::class, ItemStatus::getValues())->default(ItemStatus::AVAILABLE);
             $table->timestamps();

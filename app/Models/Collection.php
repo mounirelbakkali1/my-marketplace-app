@@ -13,4 +13,5 @@ class Collection extends Model
         'image',
         'description'
     ];
+
 }

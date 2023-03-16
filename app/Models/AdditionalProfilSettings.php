@@ -20,11 +20,14 @@ class AdditionalProfilSettings extends Model
     }
     public function address()
     {
-        return $this->hasOne(Address::class);
+        return $this->hasOne(Address::class,'id','address_id');
+    }
+    public function seller()
+    {
+        return $this->hasOne(Seller::class, 'id', 'seller_id');
     }
 
 }
-// what is my username for github?
 
 
 

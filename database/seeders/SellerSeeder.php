@@ -2,20 +2,18 @@
 
 namespace Database\Seeders;
 
-use App\Enums\ItemCondition;
-use App\Models\Item;
-use App\Models\ItemDetails;
+use App\Models\Seller;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use function rand;
 
-class ItemSeeder extends Seeder
+class SellerSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Item::factory()->count(5)->create();
+      $seller = Seller::factory()->forUser()->create();
     }
 }
