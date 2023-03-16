@@ -61,4 +61,6 @@ class Item extends Model
     protected $casts = [
         'status' => ItemStatus::class,
     ];
+    protected $hidden = ['created_at', 'updated_at','deleted_at'];
+
 }

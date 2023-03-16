@@ -5,15 +5,18 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreItemRequest;
 use App\Models\Item;
 use App\Models\Seller;
+use App\Services\HandleDataLoading;
 use App\Services\ItemService;
 use Illuminate\Http\Request;
 
 class SellerController extends Controller
 {
     private $itemService;
+    private HandleDataLoading $handleDataLoading;
 
-    public function __construct(ItemService $itemService)
+    public function __construct(ItemService $itemService, HandleDataLoading $handleDataLoading)
     {
+        $this->handleDataLoading = $handleDataLoading;
         $this->itemService = $itemService;
     }
 
@@ -29,30 +32,17 @@ class SellerController extends Controller
         ]);
     }
     public function getSellers(){
-        $sellers = Seller::all();
-        if($sellers->isEmpty())
-        {
-            return response()->json([
-                'message' => 'No sellers found',
-            ], 404);
-        }
-        return response()->json([
-            'sellers' =>$sellers,
-        ]);
+        return $this->handleDataLoading->handleCollection(function () {
+            return Seller::all();
+        }, 'sellers');
     }
 
 
     public function getSellerInfo($sellerId){
-        // get seller with additional info (and also additional info with address)
-        $seller = Seller::with('AdditionalInfo.address')->find($sellerId);
-        if (!$seller) {
-            return response()->json([
-                'message' => 'Seller not found with id ' . $sellerId,
-            ], 404);
-        }
-        return response()->json([
-            'seller' =>$seller,
-        ]);
+        $seller = Seller::find($sellerId);
+        return $this->handleDataLoading->handleDetails(function() use ($sellerId){
+            return Seller::with('AdditionalInfo.address')->find($sellerId);
+        }, 'seller details', $seller,'retreiv');
     }
 
 

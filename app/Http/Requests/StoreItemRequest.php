@@ -30,7 +30,7 @@ class StoreItemRequest extends FormRequest
             'category_id' => 'required',
             'status' => 'required|in:' . implode(',', ItemStatus::getValues()),
             'collection_id' => 'required',
-            'seller_id' => 'required',
+            'seller_id' => 'required|exists:users,id',
         ];
     }
     public function messages(): array

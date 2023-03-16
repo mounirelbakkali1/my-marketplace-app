@@ -5,18 +5,22 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
+use App\Services\HandleDataLoading;
 
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    private HandleDataLoading $handleDataLoading;
+
+    public function __construct(HandleDataLoading $handleDataLoading)
+    {
+        $this->handleDataLoading = $handleDataLoading;
+    }
+
     public function index()
     {
-        $categories = Category::all();
-        if($categories->isEmpty())
-            return response()->json(['message' => 'No categories found'], 404);
-        return response()->json($categories);
+        return $this->handleDataLoading->handleCollection(function () {
+            return Category::all();
+        }, 'categories');
     }
 
 
@@ -61,12 +65,6 @@ class CategoryController extends Controller
     public function destroy($category)
     {
         $category = Category::find($category);
-        if (!$category) return response()->json(['message' => 'Category not found'], 404);
-        try {
-            $category->delete();
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Error deleting category', 'error' => $e->getMessage()], 500);
-        }
-        return response()->json(['message' => 'Category deleted']);
+        $this->handleDataLoading->handleDestroy($category, 'category', 'delete');
     }
 }
