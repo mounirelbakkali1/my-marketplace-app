@@ -33,12 +33,15 @@ Route::group(['prefix' => 'v1'], function () {
     Route::get('items/{item}/details', [ItemController::class, 'getDetails']);
     Route::post('items/{item}/details', [ItemController::class, 'storeDetails']);
     Route::put('items/{item}/details', [ItemController::class, 'updateDetails']);
+    Route::get('filter/items', [ItemController::class, 'queryItems']);
 
     // Categories
     Route::apiResource('categories', CategoryController::class);
+    Route::get('categories/{category}/items', [CategoryController::class, 'getItemsByCategory']);
 
     // Collections
         Route::apiResource('collections', CollectionController::class)->except(['create']);
+    Route::get('collections/{collection}/items', [CollectionController::class, 'getItemsByCollection']);
 
     // Sellers
     Route::get('sellers', [SellerController::class, 'getSellers']);

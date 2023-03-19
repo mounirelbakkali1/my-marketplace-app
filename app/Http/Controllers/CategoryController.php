@@ -6,14 +6,17 @@ use App\Models\Category;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Services\HandleDataLoading;
+use App\Services\ItemServiceImp;
 
 class CategoryController extends Controller
 {
     private HandleDataLoading $handleDataLoading;
+    private ItemServiceImp $itemService;
 
-    public function __construct(HandleDataLoading $handleDataLoading)
+    public function __construct(HandleDataLoading $handleDataLoading, ItemServiceImp $itemService)
     {
         $this->handleDataLoading = $handleDataLoading;
+        $this->itemService = $itemService;
     }
 
     public function index()
@@ -66,5 +69,11 @@ class CategoryController extends Controller
     {
         $category = Category::find($category);
         $this->handleDataLoading->handleDestroy($category, 'category', 'delete');
+    }
+
+    public function getItemsByCategory($category_id){
+        return $this->handleDataLoading->handleCollection(function () use ($category_id){
+            return $this->itemService->showItemsByCategory($category_id);
+        }, 'items');
     }
 }

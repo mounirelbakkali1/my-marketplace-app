@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateItemRequest;
 use App\Models\Item;
 use App\Services\HandleDataLoading;
 use App\Services\ItemService;
+use Illuminate\Http\Request;
 
 class ItemController extends Controller
 {
@@ -68,6 +69,7 @@ class ItemController extends Controller
     {
         $item = Item::find($item);
         return $this->handleDataLoading->handleDetails(function () use ($item){
+            $item->increment('views');
             return Item::with('itemDetails.images')->find($item->id);
         }, 'item', $item,'retreiv');
     }
@@ -78,6 +80,15 @@ class ItemController extends Controller
         return $this->handleDataLoading->handleDetails(function () use ($request, $item){
             $item->itemDetails->update($request->validated());
         }, 'item', $item,'updat');
+    }
+
+        public function queryItems(Request $request)
+    {
+        $category_id = $request->category;
+        $collection_id = $request->collection;
+        return $this->handleDataLoading->handleCollection(function () use ($category_id, $collection_id){
+            return $this->itemService->queryItems($category_id, $collection_id);
+        }, 'items');
     }
 
 
