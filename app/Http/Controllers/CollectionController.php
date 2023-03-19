@@ -6,14 +6,17 @@ use App\Models\Collection;
 use App\Http\Requests\StoreCollectionRequest;
 use App\Http\Requests\UpdateCollectionRequest;
 use App\Services\HandleDataLoading;
+use App\Services\ItemServiceImp;
 
 class CollectionController extends Controller
 {
     private HandleDataLoading $handleDataLoading;
+    private ItemServiceImp $itemService;
 
-    public function __construct(HandleDataLoading $handleDataLoading)
+    public function __construct(HandleDataLoading $handleDataLoading, ItemServiceImp $itemService)
     {
         $this->handleDataLoading = $handleDataLoading;
+        $this->itemService = $itemService;
     }
 
 
@@ -57,5 +60,13 @@ class CollectionController extends Controller
     {
         $collection = Collection::find($collection);
         return $this->handleDataLoading->handleDestroy($collection, 'collection','delet');
+    }
+
+    public function getItemsByCollection($collection_id)
+    {
+        $collection = Collection::find($collection_id);
+        return $this->handleDataLoading->handleCollection(function () use ($collection) {
+            return $this->itemService->showItemsByCollection($collection);
+        }, 'items');
     }
 }

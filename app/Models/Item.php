@@ -54,10 +54,10 @@ class Item extends Model
         return number_format($value, 2).' DH';
     }
 
-    public function getPrimaryImageAttribute($value)
+    /*public function getPrimaryImageAttribute($value)
     {
         return asset('storage/items/'.$value);
-    }
+    }*/
     protected $casts = [
         'status' => ItemStatus::class,
     ];

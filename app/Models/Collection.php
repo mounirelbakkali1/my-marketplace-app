@@ -13,5 +13,8 @@ class Collection extends Model
         'image',
         'description'
     ];
-
+    public function Items()
+    {
+        return $this->hasMany(Item::class);
+    }
 }
