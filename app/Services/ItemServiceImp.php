@@ -19,11 +19,9 @@ class ItemServiceImp implements ItemService
     }
 
 
-    public function createItem($request)
+    public function createItem($item)
     {
-        return 0 ;
-        //$item['seller_id'] = auth()->user()->id;
-        $item = $request->validated();
+        $item['seller_id'] = auth()->user()->id;
         $item = Item::create($item);
         return $item;
     }

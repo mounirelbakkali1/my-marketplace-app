@@ -18,6 +18,7 @@ class SellerController extends Controller
     {
         $this->handleDataLoading = $handleDataLoading;
         $this->itemService = $itemService;
+        $this->middleware('auth:api',['except'=>['getSeller','getSellerInfo']]);
     }
 
     public function getSeller($sellerID){
@@ -31,7 +32,8 @@ class SellerController extends Controller
             'seller' =>$seller,
         ]);
     }
-    public function getSellers(){
+    public function index(){
+        $this->authorize('read users', Seller::class);
         return $this->handleDataLoading->handleCollection(function () {
             return Seller::all();
         }, 'sellers');

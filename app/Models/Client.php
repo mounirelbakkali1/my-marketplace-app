@@ -7,9 +7,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Client extends User
 {
+
+
     use HasFactory;
     const TYPE = Role::CLIENT;
     protected $table = 'users';
+
+    public function __construct()
+    {
+        $this->assignRole('client');
+    }
 
     public function complaints()
     {
@@ -27,4 +34,6 @@ class Client extends User
             $model->role = self::TYPE;
         });
     }
+
+
 }

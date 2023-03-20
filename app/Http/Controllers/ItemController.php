@@ -19,7 +19,7 @@ class ItemController extends Controller
     {
         $this->itemService = $itemService;
         $this->handleDataLoading = $handleDataLoading;
-
+        $this->middleware('auth:api', ['except' => ['index', 'show','getDetails','queryItems']]);
     }
 
 
@@ -34,10 +34,12 @@ class ItemController extends Controller
 
     public function store(StoreItemRequest $request)
     {
-        return  $this->handleDataLoading->handleAction(function() use ($request){
-            $item = $this->itemService->createItem($request);
+        $this->authorize('create items', Item::class);
+        $item = $request->validated();
+        return  $this->handleDataLoading->handleAction(function() use ($item){
+            $item = $this->itemService->createItem($item);
             return $item;
-        });
+        }, 'item', 'creat');
     }
 
     public function show($item)
@@ -54,6 +56,7 @@ class ItemController extends Controller
 
     public function update(UpdateItemRequest $request, Item $item)
     {
+        $this->authorize('update items', $item);
         return $this->handleDataLoading->handleAction(function () use ($request,$item){
             $this->itemService->updateItem($request, $item);
         }, 'item', $item,'updat');
@@ -61,8 +64,8 @@ class ItemController extends Controller
 
     public function destroy(Item $item)
     {
+        $this->authorize('delete items', $item);
        return $this->handleDataLoading->handleDestroy($item,'item', 'delet');
-
     }
 
     public function getDetails($item)
@@ -76,13 +79,14 @@ class ItemController extends Controller
 
     public function updateDetails(UpdateItemDetailsRequest $request, Item $item)
     {
+        $this->authorize('update items', $item);
         $item = Item::find($item->id);
         return $this->handleDataLoading->handleDetails(function () use ($request, $item){
             $item->itemDetails->update($request->validated());
         }, 'item', $item,'updat');
     }
 
-        public function queryItems(Request $request)
+   public function queryItems(Request $request)
     {
         $category_id = $request->category;
         $collection_id = $request->collection;

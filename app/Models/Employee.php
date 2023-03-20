@@ -8,10 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Employee extends User
 {
+
+
     use HasFactory;
     const TYPE = Role::EMPLOYEE;
     protected $table = 'users';
     // set type column to seller
+    public function __construct()
+    {
+        $this->assignRole('employee');
+    }
+
     protected static function booted()
     {
         static::creating(function ($model) {

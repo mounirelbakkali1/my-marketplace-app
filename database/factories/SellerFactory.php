@@ -13,18 +13,12 @@ use Illuminate\Support\Facades\Hash;
  */
 class SellerFactory extends UserFactory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+
     public function definition(): array
     {
-        return array_merge(parent::definition(), [
-            'role' => Seller::TYPE,
-        ]);
+        return parent::definition();
+
     }
-    // forUser() is a method from UserFactory
     public function forUser(): static
     {
         return $this->state(function (array $attributes) {
@@ -39,6 +33,7 @@ class SellerFactory extends UserFactory
             $seller->AdditionalInfo()->save(
                 AdditionalProfilSettings::factory()->make()
             );
+            $seller->assignRole('seller');
         });
     }
 }
