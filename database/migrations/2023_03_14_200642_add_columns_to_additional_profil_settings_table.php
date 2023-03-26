@@ -23,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('additional_profil_settings', function (Blueprint $table) {
-            //
+
         });
     }
 };

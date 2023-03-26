@@ -7,24 +7,26 @@ use App\Models\Address;
 use App\Models\Seller;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use function now;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Seller>
  */
-class SellerFactory extends UserFactory
+class SellerFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+
     public function definition(): array
     {
-        return array_merge(parent::definition(), [
-            'role' => Seller::TYPE,
-        ]);
+        return [
+            'name' => $this->faker->name(),
+            'email' => $this->faker->unique()->safeEmail(),
+            'email_verified_at' => now(),
+            'password' => Hash::make('azer1234'),
+            'remember_token' => Str::random(10),
+            'image' => $this->faker->imageUrl(),
+        ];
     }
-    // forUser() is a method from UserFactory
     public function forUser(): static
     {
         return $this->state(function (array $attributes) {
@@ -39,6 +41,7 @@ class SellerFactory extends UserFactory
             $seller->AdditionalInfo()->save(
                 AdditionalProfilSettings::factory()->make()
             );
+            $seller->assignRole('seller');
         });
     }
 }

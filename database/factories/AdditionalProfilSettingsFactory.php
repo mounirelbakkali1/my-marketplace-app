@@ -28,12 +28,12 @@ class AdditionalProfilSettingsFactory extends Factory
         ];
     }
 
-  /*  public function configure()
+    public function configure()
     {
         return $this->afterCreating(function (AdditionalProfilSettings $additionalProfilSettings) {
             $additionalProfilSettings->address()->save(
                 Address::factory()->make()
             );
         });
-    }*/
+    }
 }

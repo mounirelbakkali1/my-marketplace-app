@@ -28,7 +28,6 @@ class StoreItemRequest extends FormRequest
             'price' => 'required|numeric|min:0',
             //'primary_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'category_id' => 'required',
-            'status' => 'required|in:' . implode(',', ItemStatus::getValues()),
             'collection_id' => 'required',
             'seller_id' => 'required|exists:users,id',
         ];
