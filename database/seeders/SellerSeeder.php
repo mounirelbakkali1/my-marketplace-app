@@ -16,13 +16,6 @@ class SellerSeeder extends Seeder
      */
     public function run(): void
     {
-        // create a seller without using factory
-        $seller = new Seller();
-        $seller->name = 'John Doe';
-        $seller->email ='john@gmail.com';
-        $seller->password = Hash::make('azer1234');
-        $seller->image = 'https://picsum.photos/200/300';
-        $seller->assignRole('seller');
-        $seller->save();
+        Seller::factory()->forUser()->create();
     }
 }

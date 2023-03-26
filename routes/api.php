@@ -5,7 +5,8 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\SellerController;
-use Illuminate\Http\Request;
+use App\Http\Requests\RegisterRequest;
+use App\Models\Client;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,7 +22,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
-    Route::post('register', 'register');
+    Route::post('register', function (RegisterRequest $request) {
+        return AuthController::register(function () use ($request){
+            $validated = $request->validated();
+            return Client::create($validated);
+        });
+    });
     Route::post('logout', 'logout');
     Route::post('refresh', 'refresh');
     Route::post('users/{user}', 'userInfo');
@@ -45,13 +51,14 @@ Route::group(['prefix' => 'v1'], function () {
     Route::get('categories/{category}/items', [CategoryController::class, 'getItemsByCategory']);
 
     // Collections
-        Route::apiResource('collections', CollectionController::class)->except(['create']);
+    Route::apiResource('collections', CollectionController::class)->except(['create']);
     Route::get('collections/{collection}/items', [CollectionController::class, 'getItemsByCollection']);
 
     // Sellers
     Route::get('sellers', [SellerController::class, 'index']);
     Route::get('sellers/{seller}', [SellerController::class, 'getSeller']);
     Route::get('sellers/{seller}/info', [SellerController::class, 'getSellerInfo']);
+    Route::post('sellers', [SellerController::class, 'createSeller']);
 
 
 });

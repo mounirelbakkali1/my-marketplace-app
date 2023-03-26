@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
-use App\Http\Requests\RegisterRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use function response;
 
@@ -43,16 +41,9 @@ class AuthController extends Controller
         ]);
     }
 
-    public function register(RegisterRequest $request)
+    public static function register($call)
     {
-        $validated = $request->validated();
-
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-        ]);
-        $user->assignRole('admin');
+        $user = $call();
         $token = Auth::login($user);
         return response()->json([
             'status' => 'success',
