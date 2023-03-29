@@ -20,7 +20,7 @@ class Seller extends User
 
     public function AdditionalInfo()
     {
-        return $this->hasOne(AdditionalProfilSettings::class);
+        return $this->hasOne(AdditionalProfilSettings::class,"seller_id","id");
     }
     // set type column to seller
     protected static function booted()

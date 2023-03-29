@@ -26,7 +26,7 @@ class StoreItemRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
-            //'primary_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'primary_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'category_id' => 'required',
             'collection_id' => 'required',
             'seller_id' => 'required|exists:users,id',

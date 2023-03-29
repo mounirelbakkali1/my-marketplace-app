@@ -6,9 +6,11 @@ use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemDetailsRequest;
 use App\Http\Requests\UpdateItemRequest;
 use App\Models\Item;
+use App\Models\Seller;
 use App\Services\HandleDataLoading;
 use App\Services\ItemService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ItemController extends Controller
 {
@@ -93,6 +95,16 @@ class ItemController extends Controller
         return $this->handleDataLoading->handleCollection(function () use ($category_id, $collection_id){
             return $this->itemService->queryItems($category_id, $collection_id);
         }, 'items');
+    }
+
+
+    public function getItemsBySeller(Seller $seller){
+        if($seller->hasPermissionTo('read items'))
+        return $this->handleDataLoading->handleCollection(function () use ($seller){
+            return $this->itemService->showItemsForSeller($seller);
+        }, 'items');
+        else
+            return response()->json(['message' => 'You are not authorized to view this page'], 403);
     }
 
 

@@ -13,8 +13,9 @@ class HandleDataLoading
             $data = $call();
             if (!$data || $data->isEmpty())
                 return response()->json([
+                    'status' => 'error',
                     'message' => 'No '.$callable.' found',
-                ], 404);
+                ], 204);
             return response()->json([
                 'message' => $callable.' retrieved successfully',
                 $callable => $data
@@ -31,7 +32,7 @@ class HandleDataLoading
         if (!$nullable)
             return response()->json([
                 'message' => $callable.' not found',
-            ], 404);
+            ], 204);
         return $this->handleAction(function () use ($call){
             return $call();
         },$callable,$action);
@@ -40,8 +41,9 @@ class HandleDataLoading
     public function handleDestroy($nullable,$callable,$action){
             if (!$nullable)
                 return response()->json([
+                    'status' => false,
                     'message' => $callable.' not found',
-                ], 404);
+                ], 204);
             return $this->handleAction(function () use ($nullable){
                 $nullable->delete();
             },$callable,$action);

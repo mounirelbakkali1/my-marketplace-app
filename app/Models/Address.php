@@ -14,4 +14,9 @@ class Address extends Model
         'street',
         'zip_code',
     ];
+    protected $hidden = [
+        'id',
+        'created_at',
+        'updated_at',
+    ];
 }

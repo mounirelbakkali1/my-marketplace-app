@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Role;
 use App\Http\Requests\LoginRequest;
+use App\Models\Seller;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use function array_merge;
+use function dd;
 use function response;
 
 class AuthController extends Controller
@@ -29,16 +33,20 @@ class AuthController extends Controller
                 'message' => 'Email or password is wrong',
             ], 401);
         }
-
-        $user = Auth::user();
-        return response()->json([
+        $user = null;
+        if (Auth::user()->role == Role::SELLER){
+            $user = $this->getSellerInfo(Auth::user()->id);
+        }
+        return response()->json(array_merge(
+        [
             'status' => 'success',
-            'user' => $user,
             'authorisation' => [
                 'token' => $token,
                 'type' => 'bearer',
-            ]
-        ]);
+            ],
+        ],
+            $user
+        ));
     }
 
     public static function register($call)
@@ -53,7 +61,7 @@ class AuthController extends Controller
                 'token' => $token,
                 'type' => 'bearer',
             ]
-        ]);
+        ],201);
     }
 
     public function logout()
@@ -77,8 +85,8 @@ class AuthController extends Controller
         ]);
     }
     public function  userInfo($user_id){
-        $this->authorize('read users', User::class);
-        $user = User::with('roles.permissions')->findOrFail($user_id);
+        $this->authorize('view', [Auth::user(),User::class]);
+        $user = User::with('roles.permissions')->findOrFail($user_id)->get();
         $roles = $user->roles->pluck('name');
         $permissions = $user->roles->flatMap(function ($role) {
             return $role->permissions->pluck('name');
@@ -95,5 +103,12 @@ class AuthController extends Controller
                 'permissions' => $permissions
             ],
         ], 200);
+    }
+    public function getSellerInfo($seller_id){
+       // $this->authorize('view',[Auth::user(),User::class]);
+        $seller = Seller::with(['AdditionalInfo.address'])->find($seller_id);
+        return [
+            'user'=>$seller
+        ];
     }
 }

@@ -101,6 +101,12 @@ class ItemServiceImp implements ItemService
         return $items;
     }
 
+    public function showItemsForSeller($seller)
+    {
+        $items = Item::where('seller_id', $seller->id)->get();
+        return $this->itemDTO->mapItems($items);
+    }
+
     public function updateStock($request, $item)
     {
         // TODO: Implement updateStock() method.
