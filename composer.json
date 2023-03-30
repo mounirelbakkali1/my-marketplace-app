@@ -15,7 +15,8 @@
         "pusher/pusher-php-server": "^7.2",
         "rexlabs/enum": "^2.2",
         "spatie/laravel-permission": "^5.9",
-        "willvincent/laravel-rateable": "^3.1"
+        "willvincent/laravel-rateable": "^3.1",
+      "ext-http": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

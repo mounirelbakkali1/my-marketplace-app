@@ -6,10 +6,12 @@ use App\Enums\Role;
 use App\Http\Requests\LoginRequest;
 use App\Models\Seller;
 use App\Models\User;
+use Illuminate\Http\Response;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use function array_merge;
+use function cookie;
 use function dd;
 use function response;
 
@@ -37,16 +39,9 @@ class AuthController extends Controller
         if (Auth::user()->role == Role::SELLER){
             $user = $this->getSellerInfo(Auth::user()->id);
         }
-        return response()->json(array_merge(
-        [
-            'status' => 'success',
-            'authorisation' => [
-                'token' => $token,
-                'type' => 'bearer',
-            ],
-        ],
-            $user
-        ));
+        $response = new Response($user);
+        $response->withCookie(cookie('jwt', $token, 60, null, null, false, true)); // HttpOnly = true
+        return $response;
     }
 
     public static function register($call)
@@ -108,6 +103,7 @@ class AuthController extends Controller
        // $this->authorize('view',[Auth::user(),User::class]);
         $seller = Seller::with(['AdditionalInfo.address'])->find($seller_id);
         return [
+            'status' => 'success',
             'user'=>$seller
         ];
     }
