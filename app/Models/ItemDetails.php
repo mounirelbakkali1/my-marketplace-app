@@ -30,7 +30,7 @@ class ItemDetails extends Model
         return explode(',',$value)[0] . ' x ' . explode(',',$value)[1] . ' cm';
     }
 
-    protected $casts = [
+   /* protected $casts = [
         'condition' => ItemCondition::class,
-    ];
+    ];*/
 }

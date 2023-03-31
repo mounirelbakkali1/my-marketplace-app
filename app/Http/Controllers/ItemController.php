@@ -7,10 +7,13 @@ use App\Http\Requests\UpdateItemDetailsRequest;
 use App\Http\Requests\UpdateItemRequest;
 use App\Models\Item;
 use App\Models\Seller;
+use App\Models\User;
 use App\Services\HandleDataLoading;
 use App\Services\ItemService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use function dd;
+use function response;
 
 class ItemController extends Controller
 {
@@ -21,12 +24,13 @@ class ItemController extends Controller
     {
         $this->itemService = $itemService;
         $this->handleDataLoading = $handleDataLoading;
-        $this->middleware('auth:api', ['except' => ['index', 'show','getDetails','queryItems']]);
+        $this->middleware(['auth:api'], ['except' => ['index', 'show','getDetails','queryItems']]);
     }
 
 
     public function index()
     {
+
         return $this->handleDataLoading->handleCollection(function () {
             return $this->itemService->getMostPopularItems();
         }, 'items');
@@ -36,11 +40,10 @@ class ItemController extends Controller
 
     public function store(StoreItemRequest $request)
     {
-        $this->authorize('create items', Item::class);
+     //   $this->authorize('create', Item::class);
         $item = $request->validated();
         return  $this->handleDataLoading->handleAction(function() use ($item){
-            $item = $this->itemService->createItem($item);
-            return $item;
+            return $this->itemService->createItem($item);
         }, 'item', 'creat');
     }
 
@@ -98,7 +101,7 @@ class ItemController extends Controller
     }
 
 
-    public function getItemsBySeller(Seller $seller){
+    public function getItemsBySeller(Request $request,Seller $seller){
         if($seller->hasPermissionTo('read items'))
         return $this->handleDataLoading->handleCollection(function () use ($seller){
             return $this->itemService->showItemsForSeller($seller);

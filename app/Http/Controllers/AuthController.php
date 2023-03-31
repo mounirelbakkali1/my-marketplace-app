@@ -4,22 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Enums\Role;
 use App\Http\Requests\LoginRequest;
+use App\Models\AdditionalProfilSettings;
+use App\Models\Address;
 use App\Models\Seller;
 use App\Models\User;
-use Illuminate\Http\Response;
+use App\Services\MediaService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use function array_merge;
-use function cookie;
 use function dd;
 use function response;
 
 class AuthController extends Controller
 {
-
-    public function __construct()
+    private MediaService $mediaService;
+    public function __construct(MediaService $mediaService)
     {
+        $this->mediaService = $mediaService;
         $this->middleware('auth:api',['except'=>['/','login','register']]);
     }
     public function login(LoginRequest $request)
@@ -35,13 +38,24 @@ class AuthController extends Controller
                 'message' => 'Email or password is wrong',
             ], 401);
         }
-        $user = null;
-        if (Auth::user()->role == Role::SELLER){
-            $user = $this->getSellerInfo(Auth::user()->id);
+        $user = Auth::user();
+        if ($user->role == Role::SELLER){
+            $user = $this->getSellerInfo($user->id);
         }
-        $response = new Response($user);
-        $response->withCookie(cookie('jwt', $token, 60, null, null, false, true)); // HttpOnly = true
-        return $response;
+        return response()->json(array_merge(
+            [
+                'message' => 'User logged in successfully',
+                'authorisation' => [
+                    'token' => $token,
+                    'type' => 'bearer',
+                ],
+                ],
+               [
+                     'user' => $user,
+               ]
+        )
+        ,200);
+        //return response($user, 201)->cookie('jwt', $token, 60, '/', null, true, true, false, 'None');
     }
 
     public static function register($call)
@@ -57,6 +71,28 @@ class AuthController extends Controller
                 'type' => 'bearer',
             ]
         ],201);
+    }
+
+    public static function registerSeller(mixed $validated)
+    {
+        $seller = Seller::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+        ]);
+        $additionalInfo = new AdditionalProfilSettings();
+        $additionalInfo->phone = $validated['phone'];
+        $additionalInfo->websiteUrl = $validated['websiteUrl'];
+        // TODO : add image using MediaService
+        $address = new Address();
+        $address->street = $validated['street'];
+        $address->city = $validated['city'];
+        $address->zip_code = $validated['zip_code'];
+        $additionalInfo->address()->save($address);
+        $additionalInfo->address_id = $address->id;
+        $seller->AdditionalInfo()->save($additionalInfo);
+        $seller->assignRole('seller');
+        return $seller;
     }
 
     public function logout()
@@ -80,7 +116,7 @@ class AuthController extends Controller
         ]);
     }
     public function  userInfo($user_id){
-        $this->authorize('view', [Auth::user(),User::class]);
+       // $this->authorize('view', [Auth::user(),User::class]);
         $user = User::with('roles.permissions')->findOrFail($user_id)->get();
         $roles = $user->roles->pluck('name');
         $permissions = $user->roles->flatMap(function ($role) {
@@ -107,4 +143,5 @@ class AuthController extends Controller
             'user'=>$seller
         ];
     }
+
 }
