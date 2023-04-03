@@ -4,6 +4,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SellerController;
 use App\Http\Requests\RegisterRequest;
 use App\Models\Client;
@@ -31,8 +33,17 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('logout', 'logout');
     Route::post('refresh', 'refresh');
     Route::post('users/{user}', 'userInfo');
+    Route::post('v1/admin/employees', 'createEmployee');
+    Route::get('v1/admin/employees', 'getEmployees');
 });
 
+Route::apiResource('v1/admin/roles', RoleController::class);
+Route::apiResource('v1/admin/permissions', PermissionController::class);
+
+Route::post('ping', function () {
+    $token = request()->cookie('jwt');
+    return $token != null ? 'true' : 'false';
+});
 
 Route::group(['prefix' => 'v1'], function () {
      // Items
@@ -44,6 +55,7 @@ Route::group(['prefix' => 'v1'], function () {
     Route::get('items/{item}/details', [ItemController::class, 'getDetails']);
     Route::post('items/{item}/details', [ItemController::class, 'storeDetails']);
     Route::put('items/{item}/details', [ItemController::class, 'updateDetails']);
+    Route::post('items/{item}/rate', [ItemController::class, 'rateItem']);
     Route::get('filter/items', [ItemController::class, 'queryItems']);
 
     // Categories

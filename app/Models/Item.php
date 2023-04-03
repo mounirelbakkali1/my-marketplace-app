@@ -49,10 +49,10 @@ class Item extends Model
             'seller_id',
     ];
 
-    public function getPriceAttribute($value)
+   /* public function getPriceAttribute($value)
     {
         return number_format($value, 2).' DH';
-    }
+    }*/
 
     /*public function getPrimaryImageAttribute($value)
     {

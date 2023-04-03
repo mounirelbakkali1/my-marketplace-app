@@ -19,6 +19,11 @@ class ItemDetails extends Model
         'description',
         'condition',
     ];
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'id'
+    ];
 
     public function images()
     {

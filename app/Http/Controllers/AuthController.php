@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\Role;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\StoreEmployeeRequest;
 use App\Models\AdditionalProfilSettings;
 use App\Models\Address;
+use App\Models\Employee;
 use App\Models\Seller;
 use App\Models\User;
 use App\Services\MediaService;
@@ -13,6 +14,8 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 use function array_merge;
 use function dd;
 use function response;
@@ -23,7 +26,7 @@ class AuthController extends Controller
     public function __construct(MediaService $mediaService)
     {
         $this->mediaService = $mediaService;
-        $this->middleware('auth:api',['except'=>['/','login','register']]);
+        $this->middleware('auth:api',['except'=>['/','login','register','createEmployee','getEmployees','getRoles']]);  // TODO: to modify just for testing
     }
     public function login(LoginRequest $request)
     {
@@ -42,20 +45,10 @@ class AuthController extends Controller
         if ($user->role == Role::SELLER){
             $user = $this->getSellerInfo($user->id);
         }
-        return response()->json(array_merge(
-            [
-                'message' => 'User logged in successfully',
-                'authorisation' => [
-                    'token' => $token,
-                    'type' => 'bearer',
-                ],
-                ],
-               [
-                     'user' => $user,
-               ]
-        )
-        ,200);
-        //return response($user, 201)->cookie('jwt', $token, 60, '/', null, true, true, false, 'None');
+        $response =  response($user, 201);
+/*        $response->withCookie(cookie('jwt', $token, 120, null, null, true, true, false, 'Non'));*/
+        $response->withCookie(cookie('jwt', $token, 120, '/', null, false, true, false, 'None'));
+        return $response;
     }
 
     public static function register($call)
@@ -94,6 +87,26 @@ class AuthController extends Controller
         $seller->assignRole('seller');
         return $seller;
     }
+
+    public function createEmployee(StoreEmployeeRequest $request)
+    {
+
+        $validated = $request->validated();
+        $user = Employee::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+        ]);
+       /* foreach ($validated['permissions'] as $permission){
+            $user->givePermissionTo($permission);
+        }*/
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Employee created successfully',
+            'user' => $user,
+        ],201);
+    }
+
 
     public function logout()
     {
@@ -143,5 +156,19 @@ class AuthController extends Controller
             'user'=>$seller
         ];
     }
+
+    public function getEmployees(){
+        //$this->authorize('view',[Auth::user(),User::class]);
+        $employees = Employee::with('roles')->whereHas('roles',function ($query){
+            $query->where('name','employee');
+        })->get();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'employees list',
+            'employees' => $employees,
+        ], 200);
+    }
+
+
 
 }

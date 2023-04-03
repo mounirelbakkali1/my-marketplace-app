@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ItemCondition;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateItemRequest extends FormRequest
@@ -28,6 +29,17 @@ class UpdateItemRequest extends FormRequest
      */
     public function rules(): array
     {
-        return $this->storeItemRequest->rules();
+        return [
+            'name' => 'string|max:255',
+            'description'=> 'string',
+            'price' => 'numeric|min:0',
+           // 'primary_image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'category_id' => '',
+            'collection_id' => '',
+            'condition' => 'in:' . implode(',', ItemCondition::getValues()),
+            'color' => 'string',
+            'size' => 'string',
+            'stock' => 'numeric|min:0',
+        ];
     }
 }

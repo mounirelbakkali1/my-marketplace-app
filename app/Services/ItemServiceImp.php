@@ -26,7 +26,8 @@ class ItemServiceImp implements ItemService
 
     public function createItem($item)
     {
-        $item['seller_id'] = auth()->user()->id;
+       // $item['seller_id'] = auth()->user()->id;
+        $item['seller_id'] =27;
         return DB::transaction(function () use ($item){
             $item['primary_image']=$this->mediaService->upload($item['primary_image']);
             $itemCreated = Item::create($item);
@@ -36,10 +37,12 @@ class ItemServiceImp implements ItemService
         });
     }
 
-    public function updateItem(UpdateItemRequest $request, $id)
+    public function updateItem( $request, $item)
     {
-        $item = $request->validated();
-        $item = Item::where('id', $id)->update($item);
+        //$item = $request->validated();
+        return $request->all();
+       // $item['primary_image']!=null  ? $this->mediaService->upload($item['primary_image']) : $item['primary_image'] = $item->primary_image;
+        $item = (new \App\Models\Item)->update($request->all());
         return $item;
     }
 
