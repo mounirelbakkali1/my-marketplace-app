@@ -37,8 +37,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('v1/admin/employees', 'getEmployees');
 });
 
-Route::apiResource('v1/admin/roles', RoleController::class);
-Route::apiResource('v1/admin/permissions', PermissionController::class);
+
 
 Route::post('ping', function () {
     $token = request()->cookie('jwt');
@@ -72,6 +71,14 @@ Route::group(['prefix' => 'v1'], function () {
     Route::get('sellers/{seller}/items', [ItemController::class, 'getItemsBySeller']);
     Route::get('sellers/{seller}/info', [SellerController::class, 'getSellerInfo']);
     Route::post('sellers', [SellerController::class, 'createSeller']);
+
+
+    // Roles & Permissions
+    Route::apiResource('admin/roles', RoleController::class);
+    Route::apiResource('admin/permissions', PermissionController::class);
+    Route::get('admin/employees/{employee}/permissions', [PermissionController::class, 'getEmployeePermissions']);
+    Route::post('admin/employees/{employee}/permissions', [PermissionController::class, 'assignEmployeePermissions']);
+    Route::put('admin/employees/{employee}/permissions', [PermissionController::class, 'assignEmployeePermissions']);
 
 
 });

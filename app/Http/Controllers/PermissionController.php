@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 
@@ -76,6 +77,36 @@ class PermissionController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'permission deleted successfully',
+        ], 200);
+    }
+
+    public function getEmployeePermissions(string $id)
+    {
+        $employee = Employee::findOrFail($id);
+        // get direct permissions
+        $permissions = $employee->getDirectPermissions();
+        // get all permissions
+        $roleBasedPermissions = $employee->getAllPermissions();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'employee permissions',
+            'permissions' => $permissions,
+            'roleBasedPermissions' => $roleBasedPermissions,
+        ], 200);
+    }
+    public function assignEmployeePermissions(Request $request, string $id)
+    {
+        $request->validate([
+            'permissions' => 'required|array',
+            'permissions.*' => 'required|exists:permissions,name',
+
+        ]);
+        $employee = Employee::findOrFail($id);
+        $newpermissions = $employee->syncPermissions($request->permissions);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'employee permissions assigned successfully',
+            'permissions' => $newpermissions,
         ], 200);
     }
 }
