@@ -3,18 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\StoreEmployeeRequest;
+use App\Models\AdditionalProfilSettings;
+use App\Models\Address;
+use App\Models\Employee;
+use App\Models\Seller;
 use App\Models\User;
+use App\Services\MediaService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use function array_merge;
+use function dd;
 use function response;
 
 class AuthController extends Controller
 {
-
-    public function __construct()
+    private MediaService $mediaService;
+    public function __construct(MediaService $mediaService)
     {
-        $this->middleware('auth:api',['except'=>['/','login','register']]);
+        $this->mediaService = $mediaService;
+        $this->middleware('auth:api',['except'=>['/','login','register','createEmployee','getEmployees','getRoles']]);  // TODO: to modify just for testing
     }
     public function login(LoginRequest $request)
     {
@@ -29,16 +41,14 @@ class AuthController extends Controller
                 'message' => 'Email or password is wrong',
             ], 401);
         }
-
         $user = Auth::user();
-        return response()->json([
-            'status' => 'success',
-            'user' => $user,
-            'authorisation' => [
-                'token' => $token,
-                'type' => 'bearer',
-            ]
-        ]);
+        if ($user->role == Role::SELLER){
+            $user = $this->getSellerInfo($user->id);
+        }
+        $response =  response($user, 201);
+/*        $response->withCookie(cookie('jwt', $token, 120, null, null, true, true, false, 'Non'));*/
+        $response->withCookie(cookie('jwt', $token, 120, '/', null, false, true, false, 'None'));
+        return $response;
     }
 
     public static function register($call)
@@ -53,8 +63,50 @@ class AuthController extends Controller
                 'token' => $token,
                 'type' => 'bearer',
             ]
-        ]);
+        ],201);
     }
+
+    public static function registerSeller(mixed $validated)
+    {
+        $seller = Seller::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+        ]);
+        $additionalInfo = new AdditionalProfilSettings();
+        $additionalInfo->phone = $validated['phone'];
+        $additionalInfo->websiteUrl = $validated['websiteUrl'];
+        // TODO : add image using MediaService
+        $address = new Address();
+        $address->street = $validated['street'];
+        $address->city = $validated['city'];
+        $address->zip_code = $validated['zip_code'];
+        $additionalInfo->address()->save($address);
+        $additionalInfo->address_id = $address->id;
+        $seller->AdditionalInfo()->save($additionalInfo);
+        $seller->assignRole('seller');
+        return $seller;
+    }
+
+    public function createEmployee(StoreEmployeeRequest $request)
+    {
+
+        $validated = $request->validated();
+        $user = Employee::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+        ]);
+       /* foreach ($validated['permissions'] as $permission){
+            $user->givePermissionTo($permission);
+        }*/
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Employee created successfully',
+            'user' => $user,
+        ],201);
+    }
+
 
     public function logout()
     {
@@ -77,8 +129,8 @@ class AuthController extends Controller
         ]);
     }
     public function  userInfo($user_id){
-        $this->authorize('read users', User::class);
-        $user = User::with('roles.permissions')->findOrFail($user_id);
+       // $this->authorize('view', [Auth::user(),User::class]);
+        $user = User::with('roles.permissions')->findOrFail($user_id)->get();
         $roles = $user->roles->pluck('name');
         $permissions = $user->roles->flatMap(function ($role) {
             return $role->permissions->pluck('name');
@@ -96,4 +148,27 @@ class AuthController extends Controller
             ],
         ], 200);
     }
+    public function getSellerInfo($seller_id){
+       // $this->authorize('view',[Auth::user(),User::class]);
+        $seller = Seller::with(['AdditionalInfo.address'])->find($seller_id);
+        return [
+            'status' => 'success',
+            'user'=>$seller
+        ];
+    }
+
+    public function getEmployees(){
+        //$this->authorize('view',[Auth::user(),User::class]);
+        $employees = Employee::with('roles')->whereHas('roles',function ($query){
+            $query->where('name','employee');
+        })->get();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'employees list',
+            'employees' => $employees,
+        ], 200);
+    }
+
+
+
 }

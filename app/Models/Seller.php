@@ -12,15 +12,16 @@ class Seller extends User
     const TYPE = Role::SELLER;
     protected $table = 'users';
 
-    public function __construct()
+    /*public function __construct()
     {
+        parent::__construct();
         $this->assignRole('seller');
-    }
+    }*/
 
 
     public function AdditionalInfo()
     {
-        return $this->hasOne(AdditionalProfilSettings::class);
+        return $this->hasOne(AdditionalProfilSettings::class,"seller_id","id");
     }
     // set type column to seller
     protected static function booted()

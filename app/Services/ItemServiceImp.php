@@ -5,31 +5,44 @@ namespace App\Services;
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
 use App\Models\Item;
+use App\Models\ItemDetails;
 use Illuminate\Support\Facades\DB;
+use function array_merge;
 use function auth;
+use function dd;
 
 class ItemServiceImp implements ItemService
 {
 
     private ItemDTO $itemDTO;
+    private MediaService $mediaService;
 
-    public function __construct(ItemDTO $itemDTO)
+    public function __construct(ItemDTO $itemDTO, MediaService $mediaService)
     {
         $this->itemDTO = $itemDTO;
+        $this->mediaService = $mediaService;
     }
 
 
     public function createItem($item)
     {
-        $item['seller_id'] = auth()->user()->id;
-        $item = Item::create($item);
-        return $item;
+       // $item['seller_id'] = auth()->user()->id;
+        $item['seller_id'] =27;
+        return DB::transaction(function () use ($item){
+            $item['primary_image']=$this->mediaService->upload($item['primary_image']);
+            $itemCreated = Item::create($item);
+            $item['item_id'] = $itemCreated->id;
+            ItemDetails::create($item);
+            return $itemCreated;
+        });
     }
 
-    public function updateItem(UpdateItemRequest $request, $id)
+    public function updateItem( $request, $item)
     {
-        $item = $request->validated();
-        $item = Item::where('id', $id)->update($item);
+        //$item = $request->validated();
+        return $request->all();
+       // $item['primary_image']!=null  ? $this->mediaService->upload($item['primary_image']) : $item['primary_image'] = $item->primary_image;
+        $item = (new \App\Models\Item)->update($request->all());
         return $item;
     }
 
@@ -42,8 +55,8 @@ class ItemServiceImp implements ItemService
     public function getMostPopularItems()
     {
         $items =Item::with('seller', 'category', 'collection')
-            ->join('ratings', 'items.id', '=', 'ratings.rateable_id')
-            ->selectRaw('items.*, AVG(ratings.rating) as rating_average')
+            ->leftJoin('ratings', 'items.id', '=', 'ratings.rateable_id')
+            ->selectRaw('items.*, AVG(ratings.rating) as rating_average, COALESCE(COUNT(ratings.rating), 0) as rating_count')
             ->groupBy('items.id')
             ->orderByDesc('rating_average')
             ->limit(20)
@@ -99,6 +112,12 @@ class ItemServiceImp implements ItemService
     {
         $items = Item::where('seller_id', auth()->user()->id)->get();
         return $items;
+    }
+
+    public function showItemsForSeller($seller)
+    {
+        $items = Item::where('seller_id', $seller->id)->get();
+        return $this->itemDTO->mapItems($items);
     }
 
     public function updateStock($request, $item)

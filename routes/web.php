@@ -25,4 +25,16 @@ Route::get('/playground',function () {
 });
 
 
+Route::get('/images/{name}', function ($name) {
+    $path = storage_path('app/public/images/' . $name);
+    if (!file_exists($path)) {
+        abort(404);
+    }
+    $file = file_get_contents($path);
+    $type = pathinfo($path, PATHINFO_EXTENSION);
+    $response = response($file, 200);
+    $response->header("Content-Type", $type);
+    return $response;
+});
+
 

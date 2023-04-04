@@ -19,6 +19,11 @@ class ItemDetails extends Model
         'description',
         'condition',
     ];
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'id'
+    ];
 
     public function images()
     {
@@ -30,7 +35,7 @@ class ItemDetails extends Model
         return explode(',',$value)[0] . ' x ' . explode(',',$value)[1] . ' cm';
     }
 
-    protected $casts = [
+   /* protected $casts = [
         'condition' => ItemCondition::class,
-    ];
+    ];*/
 }

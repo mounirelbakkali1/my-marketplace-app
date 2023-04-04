@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Models\Item;
+use App\Models\Seller;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
@@ -54,6 +55,11 @@ class ItemPolicy
     public function restore(User $user, Item $item): bool
     {
         return $user->hasPermissionTo('restore items') && $user->id === $item->user_id;
+    }
+
+    public function viewItems(Seller $seller): bool
+    {
+        return $seller->hasPermissionTo('read items');
     }
 
 }

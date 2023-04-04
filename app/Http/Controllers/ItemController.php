@@ -6,25 +6,34 @@ use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemDetailsRequest;
 use App\Http\Requests\UpdateItemRequest;
 use App\Models\Item;
+use App\Models\Seller;
+use App\Models\User;
 use App\Services\HandleDataLoading;
+use App\Services\ItemDTO;
 use App\Services\ItemService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use function dd;
+use function response;
 
 class ItemController extends Controller
 {
     private $itemService;
     private $handleDataLoading;
+    private $itemDTO;
 
-    public function __construct(ItemService $itemService, HandleDataLoading $handleDataLoading)
+    public function __construct(ItemService $itemService, HandleDataLoading $handleDataLoading, ItemDTO $itemDTO)
     {
         $this->itemService = $itemService;
+        $this->itemDTO = $itemDTO;
         $this->handleDataLoading = $handleDataLoading;
-        $this->middleware('auth:api', ['except' => ['index', 'show','getDetails','queryItems']]);
+      //  $this->middleware(['fromCookie'], ['except' => ['index', 'show','getDetails','queryItems']]);
     }
 
 
     public function index()
     {
+
         return $this->handleDataLoading->handleCollection(function () {
             return $this->itemService->getMostPopularItems();
         }, 'items');
@@ -34,11 +43,10 @@ class ItemController extends Controller
 
     public function store(StoreItemRequest $request)
     {
-        $this->authorize('create items', Item::class);
+     //   $this->authorize('create', Item::class);
         $item = $request->validated();
         return  $this->handleDataLoading->handleAction(function() use ($item){
-            $item = $this->itemService->createItem($item);
-            return $item;
+            return $this->itemService->createItem($item);
         }, 'item', 'creat');
     }
 
@@ -54,9 +62,17 @@ class ItemController extends Controller
 
 
 
-    public function update(UpdateItemRequest $request, Item $item)
+    public function update(Request $request, Item $item)
     {
-        $this->authorize('update items', $item);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'stock' => 'required|numeric',
+            'category_id' => 'required|numeric',
+            'collection_id' => 'required|numeric'
+        ]);
+       // $this->authorize('update items', $item);
         return $this->handleDataLoading->handleAction(function () use ($request,$item){
             $this->itemService->updateItem($request, $item);
         }, 'item', $item,'updat');
@@ -72,8 +88,11 @@ class ItemController extends Controller
     {
         $item = Item::find($item);
         return $this->handleDataLoading->handleDetails(function () use ($item){
-            $item->increment('views');
-            return Item::with('itemDetails.images')->find($item->id);
+        //return Item::with('itemDetails')->findOrfail($item->id);
+            /*if(!Auth::user()->id==$item->seller_id)
+                $item->increment('views');*/
+            //return $this->itemDTO->mapItem(Item::with('itemDetails.images')->find($item->id));
+            return Item::with('itemDetails')->find($item->id);
         }, 'item', $item,'retreiv');
     }
 
@@ -93,6 +112,25 @@ class ItemController extends Controller
         return $this->handleDataLoading->handleCollection(function () use ($category_id, $collection_id){
             return $this->itemService->queryItems($category_id, $collection_id);
         }, 'items');
+    }
+
+
+    public function getItemsBySeller(Request $request,Seller $seller){
+        if($seller->hasPermissionTo('read items'))
+        return $this->handleDataLoading->handleCollection(function () use ($seller){
+            return $this->itemService->showItemsForSeller($seller);
+        }, 'items');
+        else
+            return response()->json(['message' => 'You are not authorized to view this page'], 403);
+    }
+
+    public function rateItem(Request $request, Item $item)
+    {
+    //    $this->authorize('rate items', $item);
+        return $this->handleDataLoading->handleAction(function () use ($request, $item){
+            $item->rateOnce($request->rating,$request->comment);
+            return $item;
+        }, 'item', $item,'rat');
     }
 
 

@@ -52,25 +52,9 @@ class SellerController extends Controller
 
     public function createSeller(CreateSellerRequest $request){
        $validated = $request->validated();
-       return AuthController::register(function () use ($validated) {
-           $seller = Seller::create([
-               'name' => $validated['name'],
-               'email' => $validated['email'],
-               'password' => Hash::make($validated['password']),
-           ]);
-           $additionalInfo = new AdditionalProfilSettings();
-           $additionalInfo->phone = $validated['phone'];
-           $additionalInfo->websiteUrl = $validated['websiteUrl'];
-           $address = new Address();
-            $address->street = $validated['street'];
-            $address->city = $validated['city'];
-            $address->zip_code = $validated['zip_code'];
-            $additionalInfo->address()->save($address);
-            $additionalInfo->address_id = $address->id;
-           $seller->AdditionalInfo()->save($additionalInfo);
-           return $seller;
-        });
+       return AuthController::registerSeller($validated); // how has the information is how do the work (design pattern)
     }
+
 
 
 

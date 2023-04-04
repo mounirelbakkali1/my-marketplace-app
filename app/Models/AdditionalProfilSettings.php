@@ -13,6 +13,13 @@ class AdditionalProfilSettings extends Model
         'intro',
         'featured_items',
     ];
+    protected $hidden = [
+        'seller_id',
+        'address_id',
+        'id',
+        'created_at',
+        'updated_at',
+    ];
 
     public function FeaturedItems()
     {
