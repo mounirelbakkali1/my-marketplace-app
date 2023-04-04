@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Role;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Models\AdditionalProfilSettings;
@@ -15,7 +16,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 use function array_merge;
 use function dd;
 use function response;

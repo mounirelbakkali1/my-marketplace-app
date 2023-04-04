@@ -68,8 +68,8 @@ Route::group(['prefix' => 'v1'], function () {
     // Sellers
     Route::get('sellers', [SellerController::class, 'index']);
     Route::get('sellers/{seller}', [SellerController::class, 'getSeller']);
-    Route::get('sellers/{seller}/items', [ItemController::class, 'getItemsBySeller']);
     Route::get('sellers/{seller}/info', [SellerController::class, 'getSellerInfo']);
+    Route::get('sellers/{seller}/items', [ItemController::class, 'getItemsBySeller']);
     Route::post('sellers', [SellerController::class, 'createSeller']);
 
 

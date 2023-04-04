@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateSellerRequest;
 use App\Models\AdditionalProfilSettings;
 use App\Models\Address;
+use App\Models\Employee;
 use App\Models\Seller;
 use App\Services\HandleDataLoading;
 use App\Services\ItemService;
@@ -20,7 +21,7 @@ class SellerController extends Controller
     {
         $this->handleDataLoading = $handleDataLoading;
         $this->itemService = $itemService;
-        $this->middleware('auth:api',['except'=>['getSeller','getSellerInfo','createSeller']]);
+       // $this->middleware('auth:api',['except'=>['getSeller','getSellerInfo','createSeller']]);
     }
 
     public function getSeller($sellerID){
@@ -35,9 +36,10 @@ class SellerController extends Controller
         ]);
     }
     public function index(){
-        $this->authorize('read users', Seller::class);
         return $this->handleDataLoading->handleCollection(function () {
-            return Seller::all();
+            return  Seller::with('roles')->whereHas('roles',function ($query){
+                $query->where('name','seller');
+            })->get();
         }, 'sellers');
     }
 
