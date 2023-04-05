@@ -3,6 +3,8 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CollectionController;
+use App\Http\Controllers\ComplaintController;
+use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
@@ -79,6 +81,14 @@ Route::group(['prefix' => 'v1'], function () {
     Route::get('admin/employees/{employee}/permissions', [PermissionController::class, 'getEmployeePermissions']);
     Route::post('admin/employees/{employee}/permissions', [PermissionController::class, 'assignEmployeePermissions']);
     Route::put('admin/employees/{employee}/permissions', [PermissionController::class, 'assignEmployeePermissions']);
+
+
+    // History
+    Route::apiResource('admin/history', HistoryController::class)->only(['index', 'show']);
+
+
+    // Complaints
+    Route::apiResource('admin/complaints', ComplaintController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
 
 
 });

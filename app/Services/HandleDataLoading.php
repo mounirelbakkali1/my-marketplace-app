@@ -12,6 +12,17 @@ use function response;
 
 class HandleDataLoading
 {
+    private ActivityService $activityService;
+
+    /**
+     * @param ActivityService $activityService
+     */
+    public function __construct(ActivityService $activityService)
+    {
+        $this->activityService = $activityService;
+    }
+
+
     public function handleCollection($call,$callable)
     {
         try{
@@ -64,10 +75,11 @@ class HandleDataLoading
             try{
                 $return  = $call();
                 $message = $callable .' '.$action.'ed';
-                activity()
+                /*activity()
                     ->performedOn($item)
                     ->causedBy($seller)
-                    ->log($message);
+                    ->log($message);*/
+                $this->activityService->createActivity($message,$item,$seller,$message);
                 return response()->json([
                     'message' => $message,
                     $callable => $return
