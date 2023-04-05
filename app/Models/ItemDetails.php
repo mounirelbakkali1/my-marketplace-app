@@ -30,10 +30,10 @@ class ItemDetails extends Model
         return $this->hasMany(Image::class);
     }
 
-    public function getSizeAttribute($value)
+    /*public function getSizeAttribute($value)
     {
         return explode(',',$value)[0] . ' x ' . explode(',',$value)[1] . ' cm';
-    }
+    }*/
 
    /* protected $casts = [
         'condition' => ItemCondition::class,

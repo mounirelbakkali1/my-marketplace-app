@@ -22,10 +22,15 @@ class UpdateItemDetailsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'color' => 'required|string|max:255',
-            'size' => 'required|string|max:255',
-            'stock' => 'required|numeric|min:0',
+            'name' => 'required|string|max:255',
             'description' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'stock' => 'required|numeric',
+            'condition' => 'required|string',
+            'color' => 'required|string',
+            'size' => 'required|string',
+            'category_id' => 'required|numeric',
+            'collection_id' => 'required|numeric'
         ];
     }
 }

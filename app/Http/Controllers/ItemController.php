@@ -4,16 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemDetailsRequest;
-use App\Http\Requests\UpdateItemRequest;
 use App\Models\Item;
 use App\Models\Seller;
-use App\Models\User;
 use App\Services\HandleDataLoading;
 use App\Services\ItemDTO;
 use App\Services\ItemService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use function dd;
 use function response;
 
 class ItemController extends Controller
@@ -62,25 +58,18 @@ class ItemController extends Controller
 
 
 
-    public function update(Request $request, Item $item)
+    public function update(UpdateItemDetailsRequest $request, Item $item)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'stock' => 'required|numeric',
-            'category_id' => 'required|numeric',
-            'collection_id' => 'required|numeric'
-        ]);
+        $validated = $request->validated();
        // $this->authorize('update items', $item);
-        return $this->handleDataLoading->handleAction(function () use ($request,$item){
-            $this->itemService->updateItem($request, $item);
-        }, 'item', $item,'updat');
+        return $this->handleDataLoading->handleAction(function () use ($validated,$item){
+            $this->itemService->updateItem($validated, $item);
+        }, 'item','updat');
     }
 
     public function destroy(Item $item)
     {
-        $this->authorize('delete items', $item);
+       // $this->authorize('delete items', $item);
        return $this->handleDataLoading->handleDestroy($item,'item', 'delet');
     }
 
@@ -116,6 +105,11 @@ class ItemController extends Controller
 
 
     public function getItemsBySeller(Request $request,Seller $seller){
+        /*activity()
+            ->performedOn($seller)
+            ->causedBy($seller)
+            ->withProperties(['request' => $request->all])
+            ->log('Viewed items by seller');*/
         if($seller->hasPermissionTo('read items'))
         return $this->handleDataLoading->handleCollection(function () use ($seller){
             return $this->itemService->showItemsForSeller($seller);

@@ -6,7 +6,9 @@ use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
 use App\Models\Item;
 use App\Models\ItemDetails;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use function activity;
 use function array_merge;
 use function auth;
 use function dd;
@@ -37,12 +39,24 @@ class ItemServiceImp implements ItemService
         });
     }
 
-    public function updateItem( $request, $item)
+    public function updateItem( $validated, $item)
     {
-        //$item = $request->validated();
-        return $request->all();
        // $item['primary_image']!=null  ? $this->mediaService->upload($item['primary_image']) : $item['primary_image'] = $item->primary_image;
-        $item = (new \App\Models\Item)->update($request->all());
+        $item->ItemDetails->update([
+            'description' => $validated['description'],
+            'price' => $validated['price'],
+            'stock' => $validated['stock'],
+            'size' => $validated['size'],
+            'color' => $validated['color'],
+            'item_id' => $item->id,
+        ]);
+        $item = $item->update([
+            'name' => $validated['name'],
+            'category_id' => $validated['category_id'],
+            'collection_id' => $validated['collection_id'],
+            'primary_image' => $item['primary_image'],
+            'seller_id' => $item->seller_id,
+        ]);
         return $item;
     }
 

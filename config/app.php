@@ -217,6 +217,7 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
         'Permission' => Spatie\Permission\Models\Permission::class,
 
+
     ])->toArray(),
 
 ];

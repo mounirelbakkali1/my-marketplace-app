@@ -2,7 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\Item;
+use App\Models\Seller;
+use App\Models\User;
 use Exception;
+use Illuminate\Support\Facades\Auth;
+use function activity;
 use function response;
 
 class HandleDataLoading
@@ -53,10 +58,18 @@ class HandleDataLoading
 
 
         public function handleAction($call,$callable,$action){
+        // TODO: to modify just for testing
+            $seller = User::where('id',27)->first();
+            $item = Item::where('seller_id',27)->first();
             try{
                 $return  = $call();
+                $message = $callable .' '.$action.'ed';
+                activity()
+                    ->performedOn($item)
+                    ->causedBy($seller)
+                    ->log($message);
                 return response()->json([
-                    'message' => $callable.' '.$action.'ed successfully',
+                    'message' => $message,
                     $callable => $return
                 ], 200);
             }catch (Exception $e){
