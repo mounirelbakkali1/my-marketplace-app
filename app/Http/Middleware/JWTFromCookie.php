@@ -4,22 +4,26 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Symfony\Component\HttpFoundation\Response;
+use PHPOpenSourceSaver\JWTAuth\Http\Middleware\BaseMiddleware;
+use Illuminate\Support\Facades\Auth;
 use function dd;
 
-class JWTFromCookie
-{
-    public function handle(Request $request, Closure $next): Response
-    {
 
+class JWTFromCookie extends BaseMiddleware
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure $next
+     * @return mixed
+     */
+    public function handle(Request $request, Closure $next)
+    {
         $jwt = $request->cookie('jwt');
         if ($jwt) {
-            $request->headers->set('Authorization', implode(' ', ['Bearer', $jwt]));
-            //dd($request->headers->all());
-        }
-        else{
-            return response()->json(['message' => 'Unauthorized :(  '], 401);
+            $request->headers->set('Authorization', 'Bearer ' . $jwt);
+            Auth::shouldUse('api');
         }
         return $next($request);
     }

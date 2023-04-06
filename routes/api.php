@@ -41,6 +41,7 @@ Route::controller(AuthController::class)->group(function () {
 
 
 
+
 Route::post('ping', function () {
     $token = request()->cookie('jwt');
     return $token != null ? 'true' : 'false';
@@ -91,4 +92,12 @@ Route::group(['prefix' => 'v1'], function () {
     Route::apiResource('admin/complaints', ComplaintController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
 
 
+});
+
+
+
+Route::group(['prefix'=>'test','middleware'=>['fromCookie','auth:api']], function () {
+    Route::get('ping', function () {
+        return 'pong-2';
+    });
 });

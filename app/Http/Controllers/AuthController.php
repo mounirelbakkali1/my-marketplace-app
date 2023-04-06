@@ -47,7 +47,7 @@ class AuthController extends Controller
         }
         $response =  response($user, 201);
 /*        $response->withCookie(cookie('jwt', $token, 120, null, null, true, true, false, 'Non'));*/
-        $response->withCookie(cookie('jwt', $token, 120, '/', null, false, true, false, 'None'));
+        $response->withCookie(cookie('jwt', $token, 120, '/', null, false, true, false, 'Lax'));
         return $response;
     }
 
