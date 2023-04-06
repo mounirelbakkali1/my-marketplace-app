@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateItemRequest;
 use App\Models\Item;
 use App\Models\ItemDetails;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use function activity;
 use function array_merge;
@@ -34,8 +35,8 @@ class ItemServiceImp implements ItemService
             $item['primary_image']=$this->mediaService->upload($item['primary_image']);
             $itemCreated = Item::create($item);
             $item['item_id'] = $itemCreated->id;
-            ItemDetails::create($item);
-            return $itemCreated;
+            $itemDetails  = ItemDetails::create($item);
+            return array_merge($itemCreated->toArray(), $itemDetails->toArray());
         });
     }
 
@@ -68,13 +69,15 @@ class ItemServiceImp implements ItemService
 
     public function getMostPopularItems()
     {
-        $items =Item::with('seller', 'category', 'collection')
-            ->leftJoin('ratings', 'items.id', '=', 'ratings.rateable_id')
-            ->selectRaw('items.*, AVG(ratings.rating) as rating_average, COALESCE(COUNT(ratings.rating), 0) as rating_count')
-            ->groupBy('items.id')
-            ->orderByDesc('rating_average')
-            ->limit(20)
-            ->get();
+        $items =Cache::remember('most_popular_items', 60*60, function () {
+            return Item::with('seller', 'category', 'collection')
+                ->leftJoin('ratings', 'items.id', '=', 'ratings.rateable_id')
+                ->selectRaw('items.*, AVG(ratings.rating) as rating_average')
+                ->groupBy('items.id')
+                ->orderByDesc('rating_average')
+                ->limit(20)
+                ->get();
+        });
         if($items->isEmpty())
             return null;
         return $this->itemDTO->mapItems($items);
@@ -82,40 +85,49 @@ class ItemServiceImp implements ItemService
 
     public function showItem($id)
     {
-        $item= Item::findOrFail($id);
+        $item= Cache::remember('item_',60*60,function() use ($id){
+            return Item::findOrFail($id);
+        });
         if(!$item)
             return null;
         return $this->itemDTO->mapItem($item);
     }
     public function showItemDetails($id)
     {
-        return   Item::with('itemDetails')->findOrFail($id);
+        $item = Cache::remember('item_details',60*60,function() use ($id){
+            return Item::with('itemDetails')->findOrFail($id);
+        });
+        return $item;
     }
 
     public function showItemsByCategory($category)
     {
-        $items = Item::with('seller', 'category', 'collection')
-            ->join('ratings', 'items.id', '=', 'ratings.rateable_id')
-            ->selectRaw('items.*, AVG(ratings.rating) as rating_average')
-            ->groupBy('items.id')
-            ->orderByDesc('rating_average')
-            ->limit(20)
-            ->where('category_id', $category)
-            ->get();
+        $items = Cache::remember('items_by_category',60*60,function() use ($category){
+           return Item::with('seller', 'category', 'collection')
+                ->join('ratings', 'items.id', '=', 'ratings.rateable_id')
+                ->selectRaw('items.*, AVG(ratings.rating) as rating_average')
+                ->groupBy('items.id')
+                ->orderByDesc('rating_average')
+                ->limit(20)
+                ->where('category_id', $category)
+                ->get();
+        });
         if($items->isEmpty())
             return null;
         return $this->itemDTO->mapItems($items);
     }
     public function showItemsByCollection($collection)
     {
-        $items = Item::with('seller', 'category', 'collection')
-            ->join('ratings', 'items.id', '=', 'ratings.rateable_id')
-            ->selectRaw('items.*, AVG(ratings.rating) as rating_average')
-            ->groupBy('items.id')
-            ->orderByDesc('rating_average')
-            ->limit(20)
-            ->where('collection_id', $collection->id)
-            ->get();
+        $items = Cache::remember('items_by_collection',60*60,function() use ($collection){
+            return Item::with('seller', 'category', 'collection')
+                ->join('ratings', 'items.id', '=', 'ratings.rateable_id')
+                ->selectRaw('items.*, AVG(ratings.rating) as rating_average')
+                ->groupBy('items.id')
+                ->orderByDesc('rating_average')
+                ->limit(20)
+                ->where('collection_id', $collection->id)
+                ->get();
+        });
         if($items->isEmpty())
             return null;
         return $this->itemDTO->mapItems($items);
@@ -130,7 +142,9 @@ class ItemServiceImp implements ItemService
 
     public function showItemsForSeller($seller)
     {
-        $items = Item::where('seller_id', $seller->id)->get();
+        $items = Cache::remember('items_for_seller',60*60,function() use ($seller){
+            return  Item::where('seller_id', $seller->id)->get();
+        });
         return $this->itemDTO->mapItems($items);
     }
 

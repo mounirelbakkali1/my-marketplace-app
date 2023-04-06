@@ -105,11 +105,6 @@ class ItemController extends Controller
 
 
     public function getItemsBySeller(Request $request,Seller $seller){
-        /*activity()
-            ->performedOn($seller)
-            ->causedBy($seller)
-            ->withProperties(['request' => $request->all])
-            ->log('Viewed items by seller');*/
         if($seller->hasPermissionTo('read items'))
         return $this->handleDataLoading->handleCollection(function () use ($seller){
             return $this->itemService->showItemsForSeller($seller);
