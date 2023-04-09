@@ -50,7 +50,7 @@ class User extends Authenticatable implements JWTSubject
     protected static function booted()
     {
         static::creating(function ($model) {
-            $model->role = self::TYPE;
+            $model->model_type = self::TYPE;
         });
     }
 
@@ -79,6 +79,5 @@ class User extends Authenticatable implements JWTSubject
             ->logOnly(['name', 'email'])
             ->useLogName('User')
             ->setDescriptionForEvent(fn(string $eventName) => "This user {$eventName}.");
-
     }
 }

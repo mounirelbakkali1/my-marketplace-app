@@ -23,11 +23,18 @@ class Seller extends User
     {
         return $this->hasOne(AdditionalProfilSettings::class,"seller_id","id");
     }
+
+    public function Items()
+    {
+        return $this->hasMany(Item::class);
+    }
+
+
     // set type column to seller
     protected static function booted()
     {
         static::creating(function ($model) {
-            $model->role = self::TYPE;
+            $model->model_type = self::TYPE;
         });
     }
 

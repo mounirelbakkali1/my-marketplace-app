@@ -6,10 +6,12 @@ use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemDetailsRequest;
 use App\Models\Item;
 use App\Models\Seller;
+use App\Models\User;
 use App\Services\HandleDataLoading;
 use App\Services\ItemDTO;
 use App\Services\ItemService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use function response;
 
 class ItemController extends Controller
@@ -23,6 +25,8 @@ class ItemController extends Controller
         $this->itemService = $itemService;
         $this->itemDTO = $itemDTO;
         $this->handleDataLoading = $handleDataLoading;
+        // TODO: remove this line
+      //  Auth::login(User::find(55));
       //  $this->middleware(['fromCookie'], ['except' => ['index', 'show','getDetails','queryItems']]);
     }
 
@@ -116,10 +120,15 @@ class ItemController extends Controller
     public function rateItem(Request $request, Item $item)
     {
     //    $this->authorize('rate items', $item);
+
+        if($item->ratings()->where('user_id',Auth::user()->id)->exists())
+            return response()->json(['message' => 'You have already rated this item'], 200);
         return $this->handleDataLoading->handleAction(function () use ($request, $item){
+            // authenticated user with id 7
+            // TODO : to be removed after testing
             $item->rateOnce($request->rating,$request->comment);
             return $item;
-        }, 'item', $item,'rat');
+        }, 'item','rat');
     }
 
 

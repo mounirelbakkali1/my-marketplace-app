@@ -11,13 +11,9 @@ use App\Models\Employee;
 use App\Models\Seller;
 use App\Models\User;
 use App\Services\MediaService;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
-use Spatie\Permission\Models\Permission;
-use function array_merge;
-use function dd;
 use function response;
 
 class AuthController extends Controller
@@ -45,9 +41,17 @@ class AuthController extends Controller
         if ($user->role == Role::SELLER){
             $user = $this->getSellerInfo($user->id);
         }
-        $response =  response($user, 201);
+        $response =  response([
+            'status' => 'success',
+            'message' => 'User logged in successfully',
+            'user' => $user,
+            'authorisation' => [
+                'token' => $token,
+                'type' => 'bearer',
+            ]
+        ], 200);
 /*        $response->withCookie(cookie('jwt', $token, 120, null, null, true, true, false, 'Non'));*/
-        $response->withCookie(cookie('jwt', $token, 120, '/', null, false, true, false, 'Lax'));
+        //$response->withCookie(cookie('jwt', $token, 120, '/', 'http://127.0.0.1:5173', false, true, false, 'None'));
         return $response;
     }
 

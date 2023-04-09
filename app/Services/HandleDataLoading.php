@@ -69,17 +69,9 @@ class HandleDataLoading
 
 
         public function handleAction($call,$callable,$action){
-        // TODO: to modify just for testing
-            $seller = User::where('id',27)->first();
-            $item = Item::where('seller_id',27)->first();
             try{
                 $return  = $call();
                 $message = $callable .' '.$action.'ed';
-                /*activity()
-                    ->performedOn($item)
-                    ->causedBy($seller)
-                    ->log($message);*/
-                $this->activityService->createActivity($message,$item,$seller,$message);
                 return response()->json([
                     'message' => $message,
                     $callable => $return

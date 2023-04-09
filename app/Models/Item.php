@@ -58,9 +58,9 @@ class Item extends Model
     {
         return asset('storage/items/'.$value);
     }*/
-    protected $casts = [
+   /* protected $casts = [
         'status' => ItemStatus::class,
-    ];
+    ];*/
     protected $hidden = ['created_at', 'updated_at','deleted_at'];
 
 }

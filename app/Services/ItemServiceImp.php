@@ -45,11 +45,11 @@ class ItemServiceImp implements ItemService
        // $item['primary_image']!=null  ? $this->mediaService->upload($item['primary_image']) : $item['primary_image'] = $item->primary_image;
         $item->ItemDetails->update([
             'description' => $validated['description'],
-            'price' => $validated['price'],
             'stock' => $validated['stock'],
             'size' => $validated['size'],
             'color' => $validated['color'],
             'item_id' => $item->id,
+            'condition' => $validated['condition'],
         ]);
         $item = $item->update([
             'name' => $validated['name'],
@@ -57,6 +57,8 @@ class ItemServiceImp implements ItemService
             'collection_id' => $validated['collection_id'],
             'primary_image' => $item['primary_image'],
             'seller_id' => $item->seller_id,
+            'status' => $validated['status'],
+            'price' => $validated['price'],
         ]);
         return $item;
     }

@@ -85,7 +85,8 @@ Route::group(['prefix' => 'v1'], function () {
 
 
     // History
-    Route::apiResource('admin/history', HistoryController::class)->only(['index', 'show']);
+    Route::get('seller/{seller}/history', [HistoryController::class, 'getSellerActivities']);
+    Route::get('admin/history', [HistoryController::class, 'getSellersLogs']);
 
 
     // Complaints

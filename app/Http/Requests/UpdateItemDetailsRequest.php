@@ -30,7 +30,8 @@ class UpdateItemDetailsRequest extends FormRequest
             'color' => 'required|string',
             'size' => 'required|string',
             'category_id' => 'required|numeric',
-            'collection_id' => 'required|numeric'
+            'collection_id' => 'required|numeric',
+            'status'=> 'required|in:sold,available',
         ];
     }
 }

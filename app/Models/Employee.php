@@ -22,7 +22,7 @@ class Employee extends User
     protected static function booted()
     {
         static::creating(function ($model) {
-            $model->role = self::TYPE;
+            $model->model_type = self::TYPE;
         });
     }
 }
