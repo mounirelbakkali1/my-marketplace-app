@@ -2,17 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Policies\RoleAndPermissionPolicy;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 use function response;
 
 class RoleController extends Controller
 {
+
+    protected RoleAndPermissionPolicy $roleAndPermissionPolicy;
+
     /**
-     * Display a listing of the resource.
-     */
+ * @param RoleAndPermissionPolicy $roleAndPermissionPolicy
+ */
+    public function __construct(RoleAndPermissionPolicy $roleAndPermissionPolicy)
+{
+    $this->roleAndPermissionPolicy = $roleAndPermissionPolicy;
+}
+
+
+
+
     public function index()
     {
+        $this->authorize('view', [Auth::user(), 'roles']);
         $roles = Role::all();
         return response()->json([
             'status' => 'success',
@@ -26,6 +40,11 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
+        if(!Auth::user()->hasPermissionTo('add roles'))
+            return response()->json([
+                'status' => 'error',
+                'message' => 'you are not allowed to add roles',
+            ], 403);
         $request->validate([
             'name' => 'required|string|unique:roles,name',
         ]);
@@ -67,6 +86,11 @@ class RoleController extends Controller
      */
     public function destroy(Role $role)
     {
+        if(!Auth::user()->hasPermissionTo('delete roles'))
+            return response()->json([
+                'status' => 'error',
+                'message' => 'you are not allowed to delete roles',
+            ], 403);
         $role->delete();
         return response()->json([
             'status' => 'success',

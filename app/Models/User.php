@@ -70,9 +70,10 @@ class User extends Authenticatable implements JWTSubject
 
     public function getJWTCustomClaims()
     {
+        $roles = $this->roles->pluck('name');
         return [
             'email' => $this->email,
-            'role' => $this->roles->first()->name,
+            'role' => count($roles) > 0 ? $roles[0] : null,
         ];
     }
 

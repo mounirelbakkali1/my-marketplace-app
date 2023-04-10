@@ -7,9 +7,11 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Models\AdditionalProfilSettings;
 use App\Models\Address;
+use App\Models\Admin;
 use App\Models\Employee;
 use App\Models\Seller;
 use App\Models\User;
+use App\Policies\UserPolicy;
 use App\Services\MediaService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -19,10 +21,12 @@ use function response;
 class AuthController extends Controller
 {
     private MediaService $mediaService;
-    public function __construct(MediaService $mediaService)
+    protected UserPolicy $userPolicy;
+    public function __construct(MediaService $mediaService, UserPolicy $userPolicy)
     {
+        $this->userPolicy = $userPolicy;
         $this->mediaService = $mediaService;
-        $this->middleware('auth:api',['except'=>['/','login','register','createEmployee','getEmployees','getRoles']]);  // TODO: to modify just for testing
+        $this->middleware('auth:api',['except'=>['/','login','register']]);
     }
     public function login(LoginRequest $request)
     {
@@ -72,12 +76,12 @@ class AuthController extends Controller
 
     public static function registerSeller(mixed $validated)
     {
-        $seller = Seller::create([
+        $seller = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
         ]);
-        $additionalInfo = new AdditionalProfilSettings();
+       $additionalInfo = new AdditionalProfilSettings();
         $additionalInfo->phone = $validated['phone'];
         $additionalInfo->websiteUrl = $validated['websiteUrl'];
         // TODO : add image using MediaService
@@ -85,22 +89,25 @@ class AuthController extends Controller
         $address->street = $validated['street'];
         $address->city = $validated['city'];
         $address->zip_code = $validated['zip_code'];
-        $additionalInfo->address()->save($address);
+       $additionalInfo->address()->save($address);
         $additionalInfo->address_id = $address->id;
-        $seller->AdditionalInfo()->save($additionalInfo);
-        $seller->assignRole('seller');
-        return $seller;
+       $seller->AdditionalInfo()->save($additionalInfo);
+        $seller->assignRole('admin');
+        $seller->save();
+        $roles = $seller->roles->pluck('name');
+        return $roles;
     }
 
     public function createEmployee(StoreEmployeeRequest $request)
     {
-
+        //$this->authorize('create', [Auth::user(),User::class]);
         $validated = $request->validated();
-        $user = Employee::create([
+        $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
         ]);
+        $user->assignRole($validated['role']);
        /* foreach ($validated['permissions'] as $permission){
             $user->givePermissionTo($permission);
         }*/
@@ -133,8 +140,9 @@ class AuthController extends Controller
         ]);
     }
     public function  userInfo($user_id){
-       // $this->authorize('view', [Auth::user(),User::class]);
-        $user = User::with('roles.permissions')->findOrFail($user_id)->get();
+       $this->authorize('view', [Auth::user(),User::class]);
+        $user = User::with('roles.permissions')->findOrFail($user_id);
+        return $user->roles->pluck('name');
         $roles = $user->roles->pluck('name');
         $permissions = $user->roles->flatMap(function ($role) {
             return $role->permissions->pluck('name');
@@ -162,8 +170,13 @@ class AuthController extends Controller
     }
 
     public function getEmployees(){
-        //$this->authorize('view',[Auth::user(),User::class]);
-        $employees = Employee::with('roles')->whereHas('roles',function ($query){
+        if (!Auth::user()->hasRole('admin')){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You are not allowed to do this action',
+            ], 401);
+        }
+        $employees = User::with('roles')->whereHas('roles',function ($query){
             $query->where('name','employee');
         })->get();
         return response()->json([

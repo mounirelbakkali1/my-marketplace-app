@@ -10,6 +10,7 @@ use App\Models\Seller;
 use App\Services\HandleDataLoading;
 use App\Services\ItemService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class SellerController extends Controller
@@ -36,6 +37,11 @@ class SellerController extends Controller
         ]);
     }
     public function index(){
+        if(!Auth::user()->hasPermissionTo('view sellers')){
+            return response()->json([
+                'message' => 'You are not authorized to view sellers',
+            ], 401);
+        }
         return $this->handleDataLoading->handleCollection(function () {
             return  Seller::with('roles')->whereHas('roles',function ($query){
                 $query->where('name','seller');

@@ -7,41 +7,32 @@ use Illuminate\Support\Facades\Cache;
 
 class ItemObserver
 {
-    /**
-     * Handle the Item "created" event.
-     */
+
     public function created(Item $item): void
     {
         $this->clearCache();
     }
 
-    /**
-     * Handle the Item "updated" event.
-     */
+
     public function updated(Item $item): void
     {
         $this->clearCache();
     }
 
-    /**
-     * Handle the Item "deleted" event.
-     */
+
     public function deleted(Item $item): void
     {
         $this->clearCache();
     }
 
-    /**
-     * Handle the Item "restored" event.
-     */
+
+
     public function restored(Item $item): void
     {
         $this->clearCache();
     }
 
-    /**
-     * Handle the Item "force deleted" event.
-     */
+
     public function forceDeleted(Item $item): void
     {
         $this->clearCache();

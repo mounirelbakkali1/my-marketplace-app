@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateItemDetailsRequest;
 use App\Models\Item;
 use App\Models\Seller;
 use App\Models\User;
+use App\Policies\ItemPolicy;
 use App\Services\HandleDataLoading;
 use App\Services\ItemDTO;
 use App\Services\ItemService;
@@ -19,15 +20,17 @@ class ItemController extends Controller
     private $itemService;
     private $handleDataLoading;
     private $itemDTO;
+    private ItemPolicy $itemPolicy;
 
-    public function __construct(ItemService $itemService, HandleDataLoading $handleDataLoading, ItemDTO $itemDTO)
+    public function __construct(ItemService $itemService, HandleDataLoading $handleDataLoading, ItemDTO $itemDTO, ItemPolicy $itemPolicy)
     {
         $this->itemService = $itemService;
+        $this->itemPolicy = $itemPolicy;
         $this->itemDTO = $itemDTO;
         $this->handleDataLoading = $handleDataLoading;
         // TODO: remove this line
       //  Auth::login(User::find(55));
-      //  $this->middleware(['fromCookie'], ['except' => ['index', 'show','getDetails','queryItems']]);
+         $this->middleware(['auth:api'], ['except' => ['index', 'show','getDetails','queryItems']]);
     }
 
 
@@ -43,7 +46,7 @@ class ItemController extends Controller
 
     public function store(StoreItemRequest $request)
     {
-     //   $this->authorize('create', Item::class);
+        $this->itemPolicy->create(Auth::user());
         $item = $request->validated();
         return  $this->handleDataLoading->handleAction(function() use ($item){
             return $this->itemService->createItem($item);
@@ -64,8 +67,8 @@ class ItemController extends Controller
 
     public function update(UpdateItemDetailsRequest $request, Item $item)
     {
+        $this->itemPolicy->update(Auth::user(), $item);
         $validated = $request->validated();
-       // $this->authorize('update items', $item);
         return $this->handleDataLoading->handleAction(function () use ($validated,$item){
             $this->itemService->updateItem($validated, $item);
         }, 'item','updat');
@@ -73,7 +76,7 @@ class ItemController extends Controller
 
     public function destroy(Item $item)
     {
-       // $this->authorize('delete items', $item);
+        $this->itemPolicy->delete(Auth::user(), $item);
        return $this->handleDataLoading->handleDestroy($item,'item', 'delet');
     }
 
@@ -81,17 +84,17 @@ class ItemController extends Controller
     {
         $item = Item::find($item);
         return $this->handleDataLoading->handleDetails(function () use ($item){
-        //return Item::with('itemDetails')->findOrfail($item->id);
-            /*if(!Auth::user()->id==$item->seller_id)
-                $item->increment('views');*/
-            //return $this->itemDTO->mapItem(Item::with('itemDetails.images')->find($item->id));
-            return Item::with('itemDetails')->find($item->id);
+        return Item::with('itemDetails')->findOrfail($item->id);
+            if(!Auth::user()->id==$item->seller_id)
+                $item->increment('views');
+            return $this->itemDTO->mapItem(Item::with('itemDetails.images')->find($item->id));
+           // return Item::with('itemDetails')->find($item->id);
         }, 'item', $item,'retreiv');
     }
 
     public function updateDetails(UpdateItemDetailsRequest $request, Item $item)
     {
-        $this->authorize('update items', $item);
+        $this->authorize('update', $item);
         $item = Item::find($item->id);
         return $this->handleDataLoading->handleDetails(function () use ($request, $item){
             $item->itemDetails->update($request->validated());
@@ -119,7 +122,10 @@ class ItemController extends Controller
 
     public function rateItem(Request $request, Item $item)
     {
-    //    $this->authorize('rate items', $item);
+        if($item->seller_id==Auth::user()->id)
+            return response()->json(['message' => 'You cannot rate your own item'], 200);
+        if ($request->rating > 5 || $request->rating < 1)
+            return response()->json(['message' => 'Rating must be between 1 and 5'], 200);
 
         if($item->ratings()->where('user_id',Auth::user()->id)->exists())
             return response()->json(['message' => 'You have already rated this item'], 200);
