@@ -6,11 +6,14 @@ use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\ItemsControl;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SellerController;
 use App\Http\Requests\RegisterRequest;
 use App\Models\Client;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,7 +32,14 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('register', function (RegisterRequest $request) {
         return AuthController::register(function () use ($request){
             $validated = $request->validated();
-            return Client::create($validated);
+            $user =  User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+            ]);
+            $user->assignRole('client');
+            $user->save();
+            return $user;
         });
     });
     Route::post('logout', 'logout');
@@ -93,6 +103,9 @@ Route::group(['prefix' => 'v1'], function () {
     Route::apiResource('admin/complaints', ComplaintController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
 
 
+    // management
+    Route::apiResource('management/items', ItemsControl::class)->only(['index', 'show']);
+    Route::post('management/items/{item}/suspend', [ItemsControl::class, 'suspendItem']);
 
 
 });

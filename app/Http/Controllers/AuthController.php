@@ -142,7 +142,6 @@ class AuthController extends Controller
     public function  userInfo($user_id){
        $this->authorize('view', [Auth::user(),User::class]);
         $user = User::with('roles.permissions')->findOrFail($user_id);
-        return $user->roles->pluck('name');
         $roles = $user->roles->pluck('name');
         $permissions = $user->roles->flatMap(function ($role) {
             return $role->permissions->pluck('name');

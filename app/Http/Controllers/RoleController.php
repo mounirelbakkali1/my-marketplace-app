@@ -19,6 +19,7 @@ class RoleController extends Controller
     public function __construct(RoleAndPermissionPolicy $roleAndPermissionPolicy)
 {
     $this->roleAndPermissionPolicy = $roleAndPermissionPolicy;
+    $this->middleware(['auth:api','adminOnly']);
 }
 
 

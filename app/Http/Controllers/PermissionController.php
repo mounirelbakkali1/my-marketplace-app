@@ -8,9 +8,13 @@ use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
+
+    public function __construct()
+    {
+        $this->middleware(['auth:api','adminOnly']);
+    }
+
     public function index()
     {
         $permissions = Permission::all();

@@ -22,7 +22,7 @@ class SellerController extends Controller
     {
         $this->handleDataLoading = $handleDataLoading;
         $this->itemService = $itemService;
-       // $this->middleware('auth:api',['except'=>['getSeller','getSellerInfo','createSeller']]);
+       $this->middleware('auth:api',['except'=>['getSeller','getSellerInfo','createSeller']]);
     }
 
     public function getSeller($sellerID){
@@ -37,7 +37,7 @@ class SellerController extends Controller
         ]);
     }
     public function index(){
-        if(!Auth::user()->hasPermissionTo('view sellers')){
+        if(!Auth::user()->hasPermissionTo('manage sellers')){
             return response()->json([
                 'message' => 'You are not authorized to view sellers',
             ], 401);
@@ -54,7 +54,7 @@ class SellerController extends Controller
         $seller = Seller::find($sellerId);
         return $this->handleDataLoading->handleDetails(function() use ($sellerId){
             return Seller::with('AdditionalInfo.address')->find($sellerId);
-        }, 'seller details', $seller,'retreiv');
+        }, 'seller', $seller,'retreiv');
     }
 
 

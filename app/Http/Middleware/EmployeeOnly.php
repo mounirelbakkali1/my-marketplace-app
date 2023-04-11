@@ -16,7 +16,7 @@ class EmployeeOnly
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::user()->hasRole('employee')) {
+        if (Auth::check() && !Auth::user()->hasRole('employee')) {
             return response()->json([
                 'message' => 'You are not authorized to access this resource.',
             ], 403);

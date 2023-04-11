@@ -2,25 +2,38 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Item;
+use App\Services\HandleDataLoading;
+use App\Services\ItemDTO;
 use Illuminate\Http\Request;
 
 class ItemsControl extends Controller
 {
+
+    private HandleDataLoading $handleDataLoading;
+    private ItemDTO $itemDTO;
+
+    /**
+     * @param HandleDataLoading $handleDataLoading
+     */
+    public function __construct(HandleDataLoading $handleDataLoading, ItemDTO $itemDTO)
+    {
+        $this->middleware(['auth:api','employeeOnly']);
+        $this->handleDataLoading = $handleDataLoading;
+        $this->itemDTO = $itemDTO;
+    }
+
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return $this->handleDataLoading->handleCollection(function () {
+            return $this->itemDTO->mapItems(Item::with('seller', 'category', 'collection')->latest()->take(100)->get());
+        }, 'items');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
 
     /**
      * Display the specified resource.
@@ -30,19 +43,8 @@ class ItemsControl extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+    public function suspendItem(Request $request,Item $item){
+        //TODO: suspend item
     }
 }

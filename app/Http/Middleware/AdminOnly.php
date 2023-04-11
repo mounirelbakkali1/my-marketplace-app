@@ -17,7 +17,7 @@ class AdminOnly
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && !Auth::user()->hasRole('admin')) {
+        if (!Auth::user()->hasRole('admin')) {
             return response()->json([
                 'message' => 'You are not authorized to access this resource.',
             ], 403);

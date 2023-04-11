@@ -45,6 +45,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
            /* \App\Http\Middleware\JwtFromCookie::class,*/
+/*            \App\Http\Middleware\EmployeeOnly::class,*/
 
         ],
     ];
@@ -68,6 +69,8 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'fromCookie' => \App\Http\Middleware\JWTFromCookie::class,
+        'employeeOnly' => \App\Http\Middleware\EmployeeOnly::class,
+        'adminOnly' => \App\Http\Middleware\AdminOnly::class,
 
     ];
 }
