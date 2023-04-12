@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\ItemStatus;
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
 use App\Models\Item;
@@ -75,6 +76,7 @@ class ItemServiceImp implements ItemService
             return Item::with('seller', 'category', 'collection')
                 ->leftJoin('ratings', 'items.id', '=', 'ratings.rateable_id')
                 ->selectRaw('items.*, AVG(ratings.rating) as rating_average')
+                ->where('items.status', ItemStatus::AVAILABLE) // Add where clause to filter by status
                 ->groupBy('items.id')
                 ->orderByDesc('rating_average')
                 ->limit(20)

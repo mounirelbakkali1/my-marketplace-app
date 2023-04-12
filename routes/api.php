@@ -108,6 +108,7 @@ Route::group(['prefix' => 'v1'], function () {
     // management
     Route::apiResource('management/items', ItemsControl::class)->only(['index', 'show']);
     Route::post('management/items/{item}/suspend', [ItemsControl::class, 'suspendItem']);
+    Route::post('management/items/{item}/unsuspend', [ItemsControl::class, 'unsuspendItem']);
     Route::post('management/sellers/{seller}/suspend', [AuthController::class, 'suspendAccount'])->middleware('employeeOnly');
     Route::post('management/sellers/{seller}/unblock', [AuthController::class, 'activateAccount'])->middleware('employeeOnly');
 

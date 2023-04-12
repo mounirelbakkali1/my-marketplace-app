@@ -9,6 +9,7 @@ class ItemStatus extends Enum
     const AVAILABLE = 'available';
     const SOLD = 'sold';
     const PENDING = 'pending';
+    const SUSPENDED = 'suspended';
 
     public static function getValues(): array
     {
@@ -16,6 +17,7 @@ class ItemStatus extends Enum
             self::AVAILABLE,
             self::SOLD,
             self::PENDING,
+            self::SUSPENDED,
         ];
     }
 }

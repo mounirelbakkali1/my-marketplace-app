@@ -47,5 +47,6 @@ class ItemObserver
         Cache::forget('items_by_category');
         Cache::forget('items_by_collection');
         Cache::forget('items_for_seller');
+        Cache::forget('items_for_control');
     }
 }
