@@ -100,7 +100,9 @@ Route::group(['prefix' => 'v1'], function () {
 
 
     // Complaints
-    Route::apiResource('admin/complaints', ComplaintController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
+    Route::apiResource('admin/complaints', ComplaintController::class)->only(['index', 'show'])->middleware('employeeOnly');
+    Route::post('admin/complaints/{complaint}/escalate', [ComplaintController::class, 'escalateComplaint'])->middleware('employeeOnly');
+    Route::post('admin/complaints/{complaint}/reject', [ComplaintController::class, 'closeComplaint'])->middleware('employeeOnly');
 
 
     // management

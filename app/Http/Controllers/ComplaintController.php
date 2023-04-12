@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ComplaintStatus;
 use App\Http\Requests\StoreComplaintRequest;
 use App\Models\Complaint;
 use App\Services\HandleDataLoading;
@@ -23,7 +24,7 @@ class ComplaintController extends Controller
     public function index()
     {
         return $this->handleDataLoading->handleCollection(function () {
-            return Complaint::with('user:id,name')->get();
+            return Complaint::with('user:id,name,image')->get();
         }, 'complaints');
     }
 
@@ -48,22 +49,22 @@ class ComplaintController extends Controller
         }, 'complaint', $complaint, 'retriev');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(StoreComplaintRequest $request, Complaint $complaint)
+
+    public function escalateComplaint(Request $request, Complaint $complaint)
     {
-        $validated = $request->validated();
-        $this->handleDataLoading->handleAction(function () use ($validated, $complaint) {
-            return $complaint->update($validated);
-        }, 'complaint', 'updat');
+        $this->handleDataLoading->handleAction(function () use ($complaint) {
+            $complaint->complaint_status = ComplaintStatus::ESCALATED;
+            $complaint->save();
+            return $complaint;
+        }, 'complaint', 'escalat');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Complaint $complaint)
+    public function closeComplaint(Request $request, Complaint $complaint)
     {
-        $this->handleDataLoading->handleDestroy($complaint, 'complaint', 'delet');
+        $this->handleDataLoading->handleAction(function () use ($complaint) {
+            $complaint->complaint_status = ComplaintStatus::REJECTED;
+            $complaint->save();
+            return $complaint;
+        }, 'complaint', 'reject');
     }
 }
