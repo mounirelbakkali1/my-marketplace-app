@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AccountStatus;
 use App\Enums\Role;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\StoreEmployeeRequest;
@@ -35,6 +36,7 @@ class AuthController extends Controller
             'email' => $validated['email'],
             'password' => $validated['password'],
         ]);
+
         if (!$token) {
             return response()->json([
                 'status' => 'error',
@@ -42,6 +44,12 @@ class AuthController extends Controller
             ], 401);
         }
         $user = Auth::user();
+        if($user->account_status != AccountStatus::ACTIVE){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Your account is '.$user->account_status,
+            ], 401);
+        }
         if ($user->role == Role::SELLER){
             $user = $this->getSellerInfo($user->id);
         }
@@ -182,6 +190,27 @@ class AuthController extends Controller
             'status' => 'success',
             'message' => 'employees list',
             'employees' => $employees,
+        ], 200);
+    }
+
+
+    public function suspendAccount($user_id){
+        $user = User::findOrFail($user_id);
+        $user->account_status = AccountStatus::SUSPENDED;
+        $user->save();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Account suspended successfully',
+        ], 200);
+    }
+
+    public function activateAccount($user_id){
+        $user = User::findOrFail($user_id);
+        $user->account_status = AccountStatus::ACTIVE;
+        $user->save();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Account activated successfully',
         ], 200);
     }
 
