@@ -11,6 +11,7 @@ use App\Policies\ItemPolicy;
 use App\Services\HandleDataLoading;
 use App\Services\ItemDTO;
 use App\Services\ItemService;
+use App\Services\UISGenerator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use function response;
@@ -21,16 +22,20 @@ class ItemController extends Controller
     private $handleDataLoading;
     private $itemDTO;
     private ItemPolicy $itemPolicy;
+    private UISGenerator $uisGenerator;
 
-    public function __construct(ItemService $itemService, HandleDataLoading $handleDataLoading, ItemDTO $itemDTO, ItemPolicy $itemPolicy)
+
+    public function __construct(ItemService $itemService, HandleDataLoading $handleDataLoading, ItemDTO $itemDTO, ItemPolicy $itemPolicy, UISGenerator $uisGenerator
+)
     {
         $this->itemService = $itemService;
         $this->itemPolicy = $itemPolicy;
         $this->itemDTO = $itemDTO;
         $this->handleDataLoading = $handleDataLoading;
+        $this->uisGenerator = $uisGenerator;
         // TODO: remove this line
       //  Auth::login(User::find(55));
-         $this->middleware(['auth:api'], ['except' => ['index', 'show','getDetails','queryItems']]);
+         $this->middleware(['auth:api'], ['except' => ['index', 'show','getDetails','queryItems','getItemByUIS']]);
     }
 
 
@@ -135,6 +140,30 @@ class ItemController extends Controller
             $item->rateOnce($request->rating,$request->comment);
             return $item;
         }, 'item','rat');
+    }
+
+
+    public function getUIS(Item $item){
+        return response()->json([
+            'uis' => $this->uisGenerator->generateUIS(['item'=>$item])
+        ]);
+    }
+
+    public function getItemByUIS(Request $request){
+        $request->validate([
+            'uis' => 'required'
+        ],[
+            'uis.required' => 'invalid uis (Unique Identifier Serial)'
+        ]);
+        $item = $this->uisGenerator->decodeUIS($request->uis);
+        if(!$item){
+            return response()->json([
+                'message' => 'Item not found'
+            ],404);
+        }
+        return response()->json([
+            'item' =>  $this->itemDTO->mapItem(Item::find($item['item']['id']))
+        ]);
     }
 
 

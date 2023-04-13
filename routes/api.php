@@ -70,6 +70,12 @@ Route::group(['prefix' => 'v1'], function () {
     Route::post('items/{item}/rate', [ItemController::class, 'rateItem']);
     Route::get('filter/items', [ItemController::class, 'queryItems']);
 
+    // UIS
+    Route::get('items/{item}/uis', [ItemController::class, 'getUIS']);
+    Route::get('items/uis/encode', [ItemController::class, 'getItemByUIS']);
+
+
+
     // Categories
     Route::apiResource('categories', CategoryController::class);
     Route::get('categories/{category}/items', [CategoryController::class, 'getItemsByCategory']);
