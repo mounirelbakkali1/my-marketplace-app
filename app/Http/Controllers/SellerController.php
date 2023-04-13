@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateSellerRequest;
+use App\Http\Requests\UpdateSellerInfoRequest;
 use App\Models\AdditionalProfilSettings;
 use App\Models\Address;
 use App\Models\Employee;
@@ -61,6 +62,33 @@ class SellerController extends Controller
     public function createSeller(CreateSellerRequest $request){
        $validated = $request->validated();
        return AuthController::registerSeller($validated); // how has the information is how do the work (design pattern)
+    }
+
+    public function updateSeller(UpdateSellerInfoRequest $request, $sellerId){
+        $seller = Seller::find($sellerId);
+        if (!$seller) {
+            return response()->json([
+                'message' => 'Seller not found with id ' . $sellerId,
+            ], 404);
+        }
+        $validated = $request->validated();
+        $seller->update([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+        ]);
+        $seller->AdditionalInfo->update([
+            'phone' => $validated['phone'],
+            'intro'=>$validated['intro'],
+            'websiteUrl'=>$validated['websiteUrl'],
+        ]);
+        $seller->AdditionalInfo->address->update([
+            'city' => $validated['city'],
+            'street' => $validated['street'],
+            'zip_code' => $validated['zip_code'],
+        ]);
+        return response()->json([
+            'message' => 'Seller updated successfully',
+        ]);
     }
 
 

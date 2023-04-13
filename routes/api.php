@@ -84,6 +84,7 @@ Route::group(['prefix' => 'v1'], function () {
     Route::get('sellers/{seller}/info', [SellerController::class, 'getSellerInfo']);
     Route::get('sellers/{seller}/items', [ItemController::class, 'getItemsBySeller']);
     Route::post('sellers', [SellerController::class, 'createSeller']);
+    Route::put('sellers/{seller}', [SellerController::class, 'updateSeller']);
 
 
     // Roles & Permissions
