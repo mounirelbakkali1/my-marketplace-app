@@ -4,16 +4,16 @@ namespace App\Services;
 
 class UISGeneratorImpl implements UISGenerator
 {
-    public function generateUIS(array $data): string
+    public function generateUIS($data): string
     {
         $jsonData = json_encode($data);
         $base64Data = base64_encode($jsonData);
-        $token = bin2hex(random_bytes(8));
+        $token = bin2hex(random_bytes(16));
         $uis = $token . '|' . $base64Data;
         return $uis;
     }
 
-    public function decodeUIS(string $uis): array
+    public function decodeUIS($uis): array
     {
         $tokenAndData = explode('|', $uis);
         $token = $tokenAndData[0];

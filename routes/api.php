@@ -57,6 +57,11 @@ Route::post('ping', function () {
     return $token != null ? 'true' : 'false';
 });
 
+Route::get('items/uis', function (){
+    return redirect()->route('itembyuis');
+});
+
+
 Route::group(['prefix' => 'v1'], function () {
      // Items
     Route::post('items', [ItemController::class, 'store']);
@@ -72,7 +77,7 @@ Route::group(['prefix' => 'v1'], function () {
 
     // UIS
     Route::get('items/{item}/uis', [ItemController::class, 'getUIS']);
-    Route::get('items/uis/encode', [ItemController::class, 'getItemByUIS']);
+    Route::get('items/uis/encode', [ItemController::class, 'getItemByUIS'])->name('itembyuis');
 
 
 
