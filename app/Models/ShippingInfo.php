@@ -23,6 +23,8 @@ class ShippingInfo extends Model
     protected $fillable = [
         'name',
         'phone',
-        'address',
+        'address_id',
+        'order_id',
+
     ];
 }

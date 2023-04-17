@@ -14,6 +14,7 @@ use App\Services\ItemService;
 use App\Services\UISGenerator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use function dd;
 use function response;
 
 class ItemController extends Controller
@@ -89,11 +90,12 @@ class ItemController extends Controller
     {
         $item = Item::find($item);
         return $this->handleDataLoading->handleDetails(function () use ($item){
-        return Item::with('itemDetails')->findOrfail($item->id);
-            if(!Auth::user()->id==$item->seller_id)
+       // return Item::with('itemDetails')->findOrfail($item->id);
+            if(Auth::check() && !Auth::user()->id==$item->seller_id)
                 $item->increment('views');
-            return $this->itemDTO->mapItem(Item::with('itemDetails.images')->find($item->id));
-           // return Item::with('itemDetails')->find($item->id);
+           // return $this->itemDTO->mapItem(Item::with('itemDetails.images')->find($item->id));
+           //return Item::with('itemDetails')->find($item->id);
+            return $this->itemService->showItem($item->id);
         }, 'item', $item,'retreiv');
     }
 

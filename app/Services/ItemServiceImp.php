@@ -3,17 +3,12 @@
 namespace App\Services;
 
 use App\Enums\ItemStatus;
-use App\Http\Requests\StoreItemRequest;
-use App\Http\Requests\UpdateItemRequest;
 use App\Models\Item;
 use App\Models\ItemDetails;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use function activity;
 use function array_merge;
 use function auth;
-use function dd;
 
 class ItemServiceImp implements ItemService
 {
@@ -89,8 +84,8 @@ class ItemServiceImp implements ItemService
 
     public function showItem($id)
     {
-        $item= Cache::remember('item_',60*60,function() use ($id){
-            return Item::findOrFail($id);
+        $item= Cache::remember('item_',1,function() use ($id){
+           return Item::with('itemDetails','ratings.user')->find($id);
         });
         if(!$item)
             return null;

@@ -22,13 +22,7 @@ class StoreOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string',
-            'phone' => 'required|string',
-            'city' => 'required|string',
-            'street' => 'required|string',
-            'zipcode' => 'required|string',
-            'item_id' => 'required|integer|exists:items,id',
-            'quantity' => 'required|integer|min:1',
+            'item_id'=>'required|integer|exists:items,id',
         ];
     }
 }

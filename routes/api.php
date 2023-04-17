@@ -7,6 +7,8 @@ use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ItemsControl;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderItemController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SellerController;
@@ -124,6 +126,14 @@ Route::group(['prefix' => 'v1'], function () {
     Route::post('management/sellers/{seller}/suspend', [AuthController::class, 'suspendAccount'])->middleware('employeeOnly');
     Route::post('management/sellers/{seller}/unblock', [AuthController::class, 'activateAccount'])->middleware('employeeOnly');
 
+
+    // orders
+    Route::apiResource('/customer/orders',OrderItemController::class)->only('store','show');
+
+    Route::get('/sellers/{seller}/commandes',[OrderController::class,'index']);
+    Route::post('/sellers/commandes/{order}/confirm',[OrderController::class,'confirmOrder']);
+    Route::post('/sellers/commandes/{order}/cancel',[OrderController::class,'cancelOrder']);
+    Route::post('/sellers/commandes/{order}/deliver',[OrderController::class,'deliverOrder']);
 
 });
 

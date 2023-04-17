@@ -24,6 +24,6 @@ class OrderItem extends Model
         'order_id',
         'item_id',
         'quantity',
-        'price',
+        'item_price',
     ];
 }

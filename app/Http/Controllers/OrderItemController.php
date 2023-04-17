@@ -2,65 +2,40 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreAdressRequest;
+use App\Http\Requests\StoreOrderRequest;
+use App\Http\Requests\StoreShippingInfoRequest;
 use App\Models\OrderItem;
-use App\Http\Requests\StoreOrderItemRequest;
-use App\Http\Requests\UpdateOrderItemRequest;
+use App\Services\HandleDataLoading;
+use App\Services\OrderService;
 
 class OrderItemController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+
+    private OrderService $orderService;
+    private HandleDataLoading $handleDataLoading;
+
+
+
+    public function __construct(OrderService $orderService,HandleDataLoading $handleDataLoading)
     {
-        //
+        $this->orderService = $orderService;
+        $this->handleDataLoading = $handleDataLoading;
+        $this->middleware(['auth:api']);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(StoreOrderRequest $orderItemRequest,
+                          StoreShippingInfoRequest $shippingInfoRequest,
+                          StoreAdressRequest $addressRequest)
     {
-        //
+        return $this->handleDataLoading->handleAction(function() use ($orderItemRequest, $shippingInfoRequest, $addressRequest){
+            return $this->orderService->createOrder($orderItemRequest, $shippingInfoRequest, $addressRequest);
+        }, 'order', 'creat');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreOrderItemRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
     public function show(OrderItem $orderItem)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(OrderItem $orderItem)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateOrderItemRequest $request, OrderItem $orderItem)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(OrderItem $orderItem)
-    {
-        //
-    }
 }

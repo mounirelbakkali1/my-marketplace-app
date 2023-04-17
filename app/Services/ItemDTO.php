@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 
 class ItemDTO
@@ -25,5 +26,14 @@ class ItemDTO
             return $item;
     }
 
+
+    public function mapItemWithRating($item){
+        $item = $this->mapItem($item);
+        foreach ($item['ratings'] as $key => $rating){
+            $createdAt = Carbon::parse($rating['created_at']);
+            $ratings[$key]['created_at'] = $createdAt->diffForHumans();
+        }
+        return $rating;
+    }
 
 }
