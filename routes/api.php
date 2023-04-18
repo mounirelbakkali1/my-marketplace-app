@@ -68,14 +68,14 @@ Route::get('items/uis', function (){
 
 Route::group(['prefix' => 'v1'], function () {
      // Items
-    Route::post('items', [ItemController::class, 'store']);
+    Route::post('items', [ItemController::class, 'store'])->middleware(['sellerOnly']);
     Route::get('items', [ItemController::class, 'index']);
-    Route::put('items/{item}', [ItemController::class, 'update']);
+    Route::put('items/{item}', [ItemController::class, 'update'])->middleware(['sellerOnly']);
     Route::get('items/{item}', [ItemController::class, 'show']);
     Route::delete('items/{item}', [ItemController::class, 'destroy']);
     Route::get('items/{item}/details', [ItemController::class, 'getDetails']);
-    Route::post('items/{item}/details', [ItemController::class, 'storeDetails']);
-    Route::put('items/{item}/details', [ItemController::class, 'updateDetails']);
+    Route::post('items/{item}/details', [ItemController::class, 'storeDetails'])->middleware(['sellerOnly']);
+    Route::put('items/{item}/details', [ItemController::class, 'updateDetails'])->middleware(['sellerOnly']);
     Route::post('items/{item}/rate', [ItemController::class, 'rateItem']);
     Route::get('filter/items', [ItemController::class, 'queryItems']);
 
@@ -111,7 +111,7 @@ Route::group(['prefix' => 'v1'], function () {
 
 
     // History
-    Route::get('seller/{seller}/history', [HistoryController::class, 'getSellerActivities']);
+    Route::get('seller/{seller}/history', [HistoryController::class, 'getSellerActivities'])->middleware(['sellerOnly']);
     Route::get('admin/history', [HistoryController::class, 'getSellersLogs']);
 
 
@@ -138,15 +138,15 @@ Route::group(['prefix' => 'v1'], function () {
     Route::apiResource('/customer/orders',OrderItemController::class)->only('store','show');
     Route::get('/customer/{user}/orders',[OrderItemController::class,'findCustomerOrders']);
 
-    Route::get('/sellers/{seller}/commandes',[OrderController::class,'index']);
-    Route::post('/sellers/commandes/{order}/confirm',[OrderController::class,'confirmOrder']);
-    Route::post('/sellers/commandes/{order}/cancel',[OrderController::class,'cancelOrder']);
-    Route::post('/sellers/commandes/{order}/deliver',[OrderController::class,'deliverOrder']);
+    Route::get('/sellers/{seller}/commandes',[OrderController::class,'index'])->middleware(['sellerOnly']);
+    Route::post('/sellers/commandes/{order}/confirm',[OrderController::class,'confirmOrder'])->middleware(['sellerOnly']);
+    Route::post('/sellers/commandes/{order}/cancel',[OrderController::class,'cancelOrder'])->middleware(['sellerOnly']);
+    Route::post('/sellers/commandes/{order}/deliver',[OrderController::class,'deliverOrder'])->middleware(['sellerOnly']);
 
 
     // Statistics
-    Route::get('/seller/statistics',[StatisticsController::class,'getStatisticsForSeller']);
-    Route::get('/admin/statistics',[StatisticsController::class,'getStatisticsForAdmin']);
+    Route::get('/seller/statistics',[StatisticsController::class,'getStatisticsForSeller'])->middleware(['auth:api','sellerOnly']);
+    Route::get('/admin/statistics',[StatisticsController::class,'getStatisticsForAdmin'])->middleware(['auth:api','adminOnly']);
 });
 
 

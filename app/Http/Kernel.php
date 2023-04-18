@@ -71,6 +71,7 @@ class Kernel extends HttpKernel
         'fromCookie' => \App\Http\Middleware\JWTFromCookie::class,
         'employeeOnly' => \App\Http\Middleware\EmployeeOnly::class,
         'adminOnly' => \App\Http\Middleware\AdminOnly::class,
+        'sellerOnly' => \App\Http\Middleware\SellerOnly::class,
 
     ];
 }

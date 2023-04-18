@@ -88,7 +88,6 @@ class OrderServiceImpl implements OrderService
     {
         $order->status = OrderStatus::CONFIRMED;
         $order->save();
-        dd($order);
         return $order;
     }
 
@@ -96,7 +95,7 @@ class OrderServiceImpl implements OrderService
     public function getOrders(){
         // get all orders related to seller items
         $seller = Auth::user();
-        $orders = Order::with('OrderItems.item')
+        $orders = Order::with('OrderItems.item','user', 'shippingInfo.address')
             ->whereHas('orderItems', function($query) use ($seller){
             $query->whereHas('item', function($query) use ($seller){
                 $query->where('seller_id', $seller->id);
