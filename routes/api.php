@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\ComplaintController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ItemsControl;
@@ -118,6 +119,10 @@ Route::group(['prefix' => 'v1'], function () {
     Route::post('admin/complaints/{complaint}/escalate', [ComplaintController::class, 'escalateComplaint'])->middleware(['auth:api','employeeOnly']);
     Route::post('admin/complaints/{complaint}/reject', [ComplaintController::class, 'closeComplaint'])->middleware(['auth:api','employeeOnly']);
     Route::post('customer/complaints', [ComplaintController::class, 'store'])->middleware('auth:api');
+
+
+    // Contact
+    Route::post('contact', [ContactController::class, 'store']);
 
 
     // management
