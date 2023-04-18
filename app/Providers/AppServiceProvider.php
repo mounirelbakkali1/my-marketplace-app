@@ -11,6 +11,8 @@ use App\Services\ItemService;
 use App\Services\ItemServiceImp;
 use App\Services\OrderService;
 use App\Services\OrderServiceImpl;
+use App\Services\StatisticsService;
+use App\Services\StatisticsServiceImp;
 use App\Services\UISGenerator;
 use App\Services\UISGeneratorImpl;
 use Illuminate\Support\Facades\Schema;
@@ -27,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
         app()->bind(ItemService::class, ItemServiceImp::class);
         app()->bind(OrderService::class, OrderServiceImpl::class);
         app()->bind(ComplaintService::class,ComplaintServiceImpl::class);
+        app()->bind(StatisticsService::class,StatisticsServiceImp::class);
         app()->bind(UISGenerator::class,UISGeneratorImpl::class);
         app()->bind(storeEmployeeRequest::class, StoreEmployeeRequest::class);
     }

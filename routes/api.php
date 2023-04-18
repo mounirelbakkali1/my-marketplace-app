@@ -13,6 +13,7 @@ use App\Http\Controllers\OrderItemController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SellerController;
+use App\Http\Controllers\StatisticsController;
 use App\Http\Requests\RegisterRequest;
 use App\Models\Client;
 use App\Models\User;
@@ -142,6 +143,10 @@ Route::group(['prefix' => 'v1'], function () {
     Route::post('/sellers/commandes/{order}/cancel',[OrderController::class,'cancelOrder']);
     Route::post('/sellers/commandes/{order}/deliver',[OrderController::class,'deliverOrder']);
 
+
+    // Statistics
+    Route::get('/seller/statistics',[StatisticsController::class,'getStatisticsForSeller']);
+    Route::get('/admin/statistics',[StatisticsController::class,'getStatisticsForAdmin']);
 });
 
 
