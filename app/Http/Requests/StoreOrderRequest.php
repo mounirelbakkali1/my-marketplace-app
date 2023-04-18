@@ -23,6 +23,7 @@ class StoreOrderRequest extends FormRequest
     {
         return [
             'item_id'=>'required|integer|exists:items,id',
+            'quantity'=>'required|integer|min:1',
         ];
     }
 }

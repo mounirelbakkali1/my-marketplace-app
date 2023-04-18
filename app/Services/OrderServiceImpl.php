@@ -24,18 +24,18 @@ class OrderServiceImpl implements OrderService
     {
        return  DB::transaction(function() use ($orderItemRequest, $shippingInfoRequest, $addressRequest){
            $user = Auth::user();
-            $order = Order::create(['user_id' => $user->id]);
             $address = $addressRequest->validated();
             $address = Address::create($address);
             $orderItem = $orderItemRequest->validated();
             $item = Item::find($orderItem['item_id']);
-            $orderItem = OrderItem::create([
+           $order = Order::create(['user_id' => $user->id,'total_price' => $item['price']*$orderItem['quantity']]);
+           $orderItem = OrderItem::create([
                 'order_id' => $order->id,
                 'item_id' => $orderItem['item_id'],
-                'quantity' => 1,
+                'quantity' => $orderItem['quantity'],
                 'item_price' => $item['price'],
             ]);
-            $shippingInfo = $shippingInfoRequest->validated();
+           $shippingInfo = $shippingInfoRequest->validated();
             ShippingInfo::create([
                 'order_id' => $order->id,
                 'address_id' => $address->id,
