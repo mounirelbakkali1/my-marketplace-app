@@ -129,6 +129,7 @@ Route::group(['prefix' => 'v1'], function () {
 
     // orders
     Route::apiResource('/customer/orders',OrderItemController::class)->only('store','show');
+    Route::get('/customer/{user}/orders',[OrderItemController::class,'findCustomerOrders']);
 
     Route::get('/sellers/{seller}/commandes',[OrderController::class,'index']);
     Route::post('/sellers/commandes/{order}/confirm',[OrderController::class,'confirmOrder']);

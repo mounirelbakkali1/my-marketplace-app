@@ -11,6 +11,7 @@ use App\Models\Item;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ShippingInfo;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -43,6 +44,17 @@ class OrderServiceImpl implements OrderService
             ]);
        return $order;
         }, 5);
+    }
+
+    public function getCustomerOrders($customer_id)
+    {
+        $orders = Order::with('orderItems.item', 'shippingInfo.address')
+            ->where('user_id', $customer_id)
+            ->get();
+        foreach ($orders as $key => $order){
+            $order->git  = Carbon::parse($order->created_at)->diffForHumans();
+        }
+        return $orders;
     }
 
     public function deleteOrder($id)
@@ -90,6 +102,9 @@ class OrderServiceImpl implements OrderService
                 $query->where('seller_id', $seller->id);
             });
         })->get();
+        foreach ($orders as $key => $order){
+            $order->create_at_for_humman = Carbon::parse($order->created_at)->diffForHumans();
+        }
         return $orders;
     }
 }

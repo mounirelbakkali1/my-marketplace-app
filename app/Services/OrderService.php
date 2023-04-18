@@ -11,6 +11,7 @@ interface OrderService
     public function createOrder(StoreOrderRequest $orderItemRequest,
                                 StoreShippingInfoRequest $shippingInfoRequest,
                                 StoreAdressRequest $addressRequest);
+    public function getCustomerOrders($customer_id);
     public function deleteOrder($id);
     public function showOrder($id);
     public function makeOrderAsShipped($id);

@@ -6,8 +6,10 @@ use App\Http\Requests\StoreAdressRequest;
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\StoreShippingInfoRequest;
 use App\Models\OrderItem;
+use App\Models\User;
 use App\Services\HandleDataLoading;
 use App\Services\OrderService;
+use Illuminate\Support\Facades\Auth;
 
 class OrderItemController extends Controller
 {
@@ -36,6 +38,14 @@ class OrderItemController extends Controller
     public function show(OrderItem $orderItem)
     {
         //
+    }
+    public function findCustomerOrders(User $user){
+        if($user->id != Auth::user()->id){
+            return response()->json(['message' => 'You are not authorise to view this customer orders'], 403);
+        }
+        return $this->handleDataLoading->handleAction(function() use ($user){
+            return $this->orderService->getCustomerOrders($user->id);
+        }, 'orders', 'retreiv');
     }
 
 }
