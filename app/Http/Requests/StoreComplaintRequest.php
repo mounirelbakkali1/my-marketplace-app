@@ -23,9 +23,9 @@ class StoreComplaintRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|integer|exists:users,id',
             'complaint' => 'required|string',
             'complaint_type' => 'required|in:' . implode(',', ComplaintType::getValues()),
+            'additional_info' => 'nullable|string',
         ];
     }
 }

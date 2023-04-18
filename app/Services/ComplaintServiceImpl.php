@@ -2,28 +2,31 @@
 
 namespace App\Services;
 
+use App\Enums\ComplaintStatus;
+use App\Models\Complaint;
+use App\Models\ComplaintResolved;
+use Illuminate\Support\Facades\Auth;
+use function dd;
+
 class ComplaintServiceImpl implements ComplaintService
 {
 
-    public function createComplaint($request)
+    public function createComplaint($complaint)
     {
-        // TODO: Implement createComplaint() method.
+        return Complaint::create([
+            'user_id' => Auth::user()->id,
+            'complaint' => $complaint['complaint'],
+            'complaint_type' => $complaint['complaint_type'],
+            'additional_info' => $complaint['additional_info'],
+        ]);
     }
 
-    public function updateComplaint($request, $id)
-    {
-        // TODO: Implement updateComplaint() method.
-    }
 
     public function deleteComplaint($id)
     {
         // TODO: Implement deleteComplaint() method.
     }
 
-    public function showComplaint($id)
-    {
-        // TODO: Implement showComplaint() method.
-    }
 
     public function showComplaintsByUser($user)
     {
@@ -40,8 +43,27 @@ class ComplaintServiceImpl implements ComplaintService
         // TODO: Implement showComplaintsByType() method.
     }
 
-    public function escalateComplaint($id)
+    public function escalateComplaint($complaint,$note)
     {
-        // TODO: Implement escalateComplaint() method.
+        $complaint->complaint_status = ComplaintStatus::ESCALATED;
+        $complaint->save();
+        ComplaintResolved::create([
+           'complaint_id' => $complaint->id,
+              'resolved_by' => Auth::user()->id,
+            'resolved_note' => $note,
+        ]);
+        return $complaint;
+    }
+
+    public function rejectComplaint($complaint,$note)
+    {
+        $complaint->complaint_status = ComplaintStatus::REJECTED;
+        $complaint->save();
+        ComplaintResolved::create([
+            'complaint_id' => $complaint->id,
+            'resolved_by' => Auth::user()->id,
+            'resolved_note' => $note,
+        ]);
+        return $complaint;
     }
 }

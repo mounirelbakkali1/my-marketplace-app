@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Models\Item;
 use App\Observers\ItemObserver;
+use App\Services\ComplaintService;
+use App\Services\ComplaintServiceImpl;
 use App\Services\ItemService;
 use App\Services\ItemServiceImp;
 use App\Services\OrderService;
@@ -24,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
     {
         app()->bind(ItemService::class, ItemServiceImp::class);
         app()->bind(OrderService::class, OrderServiceImpl::class);
+        app()->bind(ComplaintService::class,ComplaintServiceImpl::class);
         app()->bind(UISGenerator::class,UISGeneratorImpl::class);
         app()->bind(storeEmployeeRequest::class, StoreEmployeeRequest::class);
     }
