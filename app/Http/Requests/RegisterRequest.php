@@ -25,6 +25,7 @@ class RegisterRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email',
             'password' => 'required|string|min:8',
+            'password_confirmation' => 'required|same:password',
         ];
     }
 
@@ -35,6 +36,8 @@ class RegisterRequest extends FormRequest
             'email.required' => 'Email is required',
             'password.min' => 'Password must be at least 8 characters',
             'password.required' => 'Password is required',
+            'password_confirmation.required' => 'Password confirmation is required',
+            'password_confirmation.same' => 'Password confirmation must match password',
         ];
     }
 }
