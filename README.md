@@ -25,42 +25,64 @@ Before you can run this application, you need to have the following installed on
 2. Install the project dependencies using Composer:
 
  ```
+ 
 cd my-laravel-app
 composer install
+
 ```
 
 
 3. Copy the .env.example file to .env and update the database configuration:
 
-```cp .env.example .env
+```
+
+cp .env.example .env
 nano .env
+
+
 ```
 
 
 4. Generate the application key:
 
 
-```php artisan key:generate
+```
+
+php artisan key:generate
+
+
 ```
 
 
 5. Run the database migrations:
 
-```php artisan migrate
+```
+
+php artisan migrate
+
+
 ```
 
 
 6. Generate a JWT authentication secret by running the following command:
 
 
-```php artisan jwt:secret
+```
+
+php artisan jwt:secret
+
+
 ```
 
 
 6. Run the database migrations:
 
 
-```php artisan db:seed
+```
+
+php artisan db:seed
+
+
 ```
 
 
@@ -69,7 +91,11 @@ nano .env
 To start the application, run the following command:
 
 
-```php artisan serve
+```
+
+php artisan serve
+
+
 ```
 
 
