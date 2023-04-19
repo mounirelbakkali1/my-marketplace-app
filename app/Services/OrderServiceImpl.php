@@ -28,6 +28,9 @@ class OrderServiceImpl implements OrderService
             $address = Address::create($address);
             $orderItem = $orderItemRequest->validated();
             $item = Item::find($orderItem['item_id']);
+            if($item->ItemDetails->stock < $orderItem['quantity']){
+                return throw new \Exception('Stock is not enough');
+            }
            $order = Order::create(['user_id' => $user->id,'total_price' => $item['price']*$orderItem['quantity']]);
            $orderItem = OrderItem::create([
                 'order_id' => $order->id,

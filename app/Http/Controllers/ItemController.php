@@ -40,11 +40,13 @@ class ItemController extends Controller
     }
 
 
-    public function index()
+    public function index(Request $request)
     {
+        $categories = $request->get('categories', []);
+        $collections = $request->get('collections', []);
 
-        return $this->handleDataLoading->handleCollection(function () {
-            return $this->itemService->getMostPopularItems();
+        return $this->handleDataLoading->handleCollection(function () use ($categories, $collections) {
+            return $this->itemService->getMostPopularItems($categories, $collections);
         }, 'items');
     }
 

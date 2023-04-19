@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use function array_merge;
 use function auth;
+use function dd;
 
 class ItemServiceImp implements ItemService
 {
@@ -65,21 +66,25 @@ class ItemServiceImp implements ItemService
         return $item;
     }
 
-    public function getMostPopularItems()
+    public function getMostPopularItems($categories, $collections)
     {
-        $items =Cache::remember('most_popular_items', 60*60, function () {
-            return Item::with('seller', 'category', 'collection')
+            $all =   Item::with('seller', 'category', 'collection')
                 ->leftJoin('ratings', 'items.id', '=', 'ratings.rateable_id')
                 ->selectRaw('items.*, AVG(ratings.rating) as rating_average')
                 ->where('items.status', ItemStatus::AVAILABLE) // Add where clause to filter by status
                 ->groupBy('items.id')
                 ->orderByDesc('rating_average')
-                ->limit(20)
-                ->get();
-        });
-        if($items->isEmpty())
+                ->limit(50);
+            if (!empty($categories)) {
+                $all->whereIn('category_id', $categories);
+            }
+            if (!empty($collections)) {
+                $all->whereIn('collection_id', $collections);
+            }
+            $all = $all->get();
+        if($all->isEmpty())
             return null;
-        return $this->itemDTO->mapItems($items);
+        return $this->itemDTO->mapItems($all);
     }
 
     public function showItem($id)

@@ -13,6 +13,6 @@ interface ItemService
     public function showItem($id);
     public function showItemsByCategory($category);
     public function showItemsBySeller($seller);
-    public function getMostPopularItems();
+    public function getMostPopularItems($categories, $collections);
     public function updateStock($request, $item);
 }
